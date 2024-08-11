@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Projects\\Nezam.CES\\Nezam.Web.App\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7DA90A-F7F5-4499-ADBC-C75C728ACFDE}|Nezam.Web.App\\Nezam.System.Web.csproj|d:\\projects\\nezam.ces\\nezam.web.app\\nezam.web.app\\reports\\report1.cs||{95027D70-C6B4-4736-8A48-AD3582187321}",
+      "RelativeMoniker": "D:0:0:{5D7DA90A-F7F5-4499-ADBC-C75C728ACFDE}|Nezam.Web.App\\Nezam.System.Web.csproj|solutionrelative:nezam.web.app\\reports\\report1.cs||{95027D70-C6B4-4736-8A48-AD3582187321}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7DA90A-F7F5-4499-ADBC-C75C728ACFDE}|Nezam.Web.App\\Nezam.System.Web.csproj|d:\\projects\\nezam.ces\\nezam.web.app\\nezam.web.app\\reports\\report1.cs||{95027D70-C6B4-4736-8A48-AD3582187321}|Form",
+      "RelativeMoniker": "D:0:0:{5D7DA90A-F7F5-4499-ADBC-C75C728ACFDE}|Nezam.Web.App\\Nezam.System.Web.csproj|solutionrelative:nezam.web.app\\reports\\report1.cs||{95027D70-C6B4-4736-8A48-AD3582187321}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Report1.cs",
+              "DocumentMoniker": "D:\\Projects\\Nezam.CES\\Nezam.Web.App\\Nezam.Web.App\\Reports\\Report1.cs",
+              "RelativeDocumentMoniker": "Nezam.Web.App\\Reports\\Report1.cs",
+              "ToolTip": "D:\\Projects\\Nezam.CES\\Nezam.Web.App\\Nezam.Web.App\\Reports\\Report1.cs",
+              "RelativeToolTip": "Nezam.Web.App\\Reports\\Report1.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-10T11:19:31.755Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Report1.cs [Design]",
+              "DocumentMoniker": "D:\\Projects\\Nezam.CES\\Nezam.Web.App\\Nezam.Web.App\\Reports\\Report1.cs",
+              "RelativeDocumentMoniker": "Nezam.Web.App\\Reports\\Report1.cs",
+              "ToolTip": "D:\\Projects\\Nezam.CES\\Nezam.Web.App\\Nezam.Web.App\\Reports\\Report1.cs [Design]",
+              "RelativeToolTip": "Nezam.Web.App\\Reports\\Report1.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-10T11:15:49.124Z",
+              "EditorCaption": " [Design]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
