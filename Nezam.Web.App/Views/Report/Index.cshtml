@@ -1,0 +1,91 @@
+﻿@{
+Layout = null;
+}
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <partial name="~/Views/Shared/_head_css.cshtml"/>
+</head>
+<body>
+
+
+<div id="main-container" class="d-flex flex-column vh-100">
+    <!-- Nav Tabs -->
+    <ul class="nav nav-tabs" id="editorTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="view-tab" data-bs-toggle="tab" data-bs-target="#view" type="button" role="tab" aria-controls="view" aria-selected="true">View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="code-tab" data-bs-toggle="tab" data-bs-target="#code" type="button" role="tab" aria-controls="code" aria-selected="false">Code</button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content flex-grow-1">
+        <!-- View Tab -->
+        <div class="tab-pane fade show active h-100" id="view" role="tabpanel" aria-labelledby="view-tab">
+            <div class="d-flex h-100">
+                <div id="toolbox" class="bg-light p-3 border-end">
+                    <div class="toolbox-item" draggable="true" data-type="text">Text</div>
+                    <div class="toolbox-item" draggable="true" data-type="counter">Counter</div>
+                    <div class="toolbox-item" draggable="true" data-type="section">Section</div>
+                </div>
+                <div id="svg-container" class="flex-grow-1">
+                    <svg id="svg-canvas" xmlns="http://www.w3.org/2000/svg">
+                        <rect id="a4-rect" x="100" y="100" width="595.28" height="841.89" fill="white" stroke="black" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Tab -->
+        <div class="tab-pane fade h-100" id="code" role="tabpanel" aria-labelledby="code-tab">
+            <textarea id="codeEditor" class="w-100 h-100" style="resize: none;"></textarea>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    #svg-container {
+        overflow: hidden;
+        cursor: grab;
+        background-color: #e8e8e8;
+        position: relative;
+    }
+
+    #svg-canvas {
+        width: 10000px;
+        height: 10000px;
+    }
+
+    #a4-rect {
+        cursor: pointer;
+    }
+
+    .toolbox-item {
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        cursor: grab;
+    }
+
+    textarea#codeEditor {
+        font-family: monospace;
+        font-size: 14px;
+    }
+</style>
+<partial name="~/Views/Shared/_vendor_scripts.cshtml"/>
+<script src="~/assets/js/site.js"></script>
+
+</body>
+</html>
