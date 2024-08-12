@@ -1,0 +1,80 @@
+﻿@page
+@model Velzon.Pages.Report.DossierWithoutExecuterReportModel
+@{
+ViewData["Title"] = "گزارش پرونده‌های بدون مجری";
+}
+
+<div class="row">
+    <div class="col-3">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">فیلتر گزارش</h4>
+            </div>
+            <div class="card-body">
+                <form id="reportForm" method="post" asp-page-handler="GenerateReport">
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.StartDate" class="form-label">تاریخ شروع (هجری شمسی)</label>
+                        <input asp-for="FilterModel.StartDate" id="StartDate" class="form-control" type="text" />
+                        <span asp-validation-for="FilterModel.StartDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.EndDate" class="form-label">تاریخ پایان (هجری شمسی)</label>
+                        <input asp-for="FilterModel.EndDate" id="EndDate" class="form-control" type="text" />
+                        <span asp-validation-for="FilterModel.EndDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.SelectedDossierTypeId" class="form-label">نوع پرونده</label>
+                        <select asp-for="FilterModel.SelectedDossierTypeId" class="form-select" asp-items="Model.FilterModel.DossierTypes"></select>
+                        <span asp-validation-for="FilterModel.SelectedDossierTypeId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.SelectedSyncCode" class="form-label">شهر</label>
+                        <select asp-for="FilterModel.SelectedSyncCode" class="form-select" asp-items="Model.FilterModel.Cities"></select>
+                        <span asp-validation-for="FilterModel.SelectedSyncCode" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">نمایش گزارش</button>
+                </form>
+            </div>
+            
+        </div>
+
+        @if (Model.WebReport != null)
+        {
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="mb-0">@ViewBag.Title</h4>
+            </div>
+            <div class="card-body">
+                <form asp-page-handler="DownloadPdf" method="post">
+                    <input type="hidden" asp-for="FilterModel.StartDate"/>
+                    <input type="hidden" asp-for="FilterModel.EndDate"/>
+                    <input type="hidden" asp-for="FilterModel.SelectedDossierTypeId"/>
+                    <input type="hidden" asp-for="FilterModel.SelectedSyncCode"/>
+                    <button type="submit" class="btn btn-danger">دانلود PDF</button>
+                </form>
+
+                <button type="button" class="btn btn-secondary mt-2" id="printButton">چاپ</button>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="col-9">
+        @if (Model.WebReport != null)
+        {
+        @await Model.WebReport.Render()
+        }
+        else
+        {
+        <div class="card">
+            <div class="card-body">
+                <p>لطفاً فیلترهای گزارش را مشخص کنید و بر روی "نمایش گزارش" کلیک کنید.</p>
+            </div>
+        </div>
+        }
+    </div>
+</div>

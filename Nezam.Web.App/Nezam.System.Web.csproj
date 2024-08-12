@@ -8,11 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.5.0" />
     <PackageReference Include="DevExpress.Reporting.Core" Version="24.1.3" />
     <PackageReference Include="FastReport.OpenSource" Version="2024.2.14" />
     <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2024.2.14" />
     <PackageReference Include="FastReport.OpenSource.Web" Version="2024.2.14" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
@@ -196,6 +201,25 @@
     <_ContentIncludedByDefault Remove="Views\Tasks\ListView.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Tasks\TaskDetails.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Widgets\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Report\DossierWithoutExecuterReport.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Shared\Components\UserProfile\Default.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\Error.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_customizer.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_footer.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_head_css.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_Layout.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_LayoutAuth.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_menu.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_page_title.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_sidebar.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_title_meta.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_topbar.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_ValidationScriptsPartial.cshtml" />
+    <AdditionalFiles Include="Pages\Shared\_vendor_scripts.cshtml" />
+  </ItemGroup>
+
 
 </Project>
