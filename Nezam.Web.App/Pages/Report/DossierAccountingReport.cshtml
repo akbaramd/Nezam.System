@@ -1,0 +1,61 @@
+﻿@page
+@model Velzon.Pages.Report.DossierAccountingReport
+@{
+ViewData["Title"] = "گزارش پرونده‌های بدون مجری";
+}
+
+<div class="row">
+    <div class="col-3">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">فیلتر گزارش</h4>
+            </div>
+            <div class="card-body">
+                <form id="reportForm" method="post" asp-page-handler="GenerateReport">
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.DossierNumber" class="form-label">تاریخ شروع (هجری شمسی)</label>
+                        <input asp-for="FilterModel.DossierNumber"  class="form-control" type="text" />
+                        <span asp-validation-for="FilterModel.DossierNumber" class="text-danger"></span>
+                    </div>
+
+                   
+
+                    <button type="submit" class="btn btn-primary">نمایش گزارش</button>
+                </form>
+            </div>
+            
+        </div>
+
+        @if (Model.WebReport != null)
+        {
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="mb-0">@ViewBag.Title</h4>
+            </div>
+            <div class="card-body">
+                <form asp-page-handler="DownloadPdf" method="post">
+                    <input type="hidden" asp-for="FilterModel.DossierNumber"/>
+                    <button type="submit" class="btn btn-danger">دانلود PDF</button>
+                </form>
+
+                <button type="button" class="btn btn-secondary mt-2" id="printButton">چاپ</button>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="col-9">
+        @if (Model.WebReport != null)
+        {
+        @await Model.WebReport.Render()
+        }
+        else
+        {
+        <div class="card">
+            <div class="card-body">
+                <p>لطفاً فیلترهای گزارش را مشخص کنید و بر روی "نمایش گزارش" کلیک کنید.</p>
+            </div>
+        </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,313 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="05/16/2013 12:56:40" ReportInfo.Modified="08/14/2024 08:54:11" ReportInfo.CreatorVersion="2021.1.16.0" PrintSettings.ShowDialog="false">
+  <Dictionary>
+    <TableDataSource Name="tbl_change" ReferenceName="Ds_tayid_sabtnagshe1.tbl_change" DataType="System.Int32" Enabled="true">
+      <Column Name="sabt_no" DataType="System.Int32"/>
+      <Column Name="ozviyat_no" DataType="System.Int64"/>
+      <Column Name="gorooh_cod" DataType="System.Int32"/>
+      <Column Name="tedad_cod" DataType="System.Double"/>
+      <Column Name="name" DataType="System.String"/>
+      <Column Name="fname" DataType="System.String"/>
+      <Column Name="title" DataType="System.String"/>
+      <Column Name="nezarat" DataType="System.Double"/>
+      <Column Name="tarrahi" DataType="System.Double"/>
+      <Column Name="daftar_fanni_no" DataType="System.String"/>
+      <Column Name="tafavot_metraj" DataType="System.Int32"/>
+      <Column Name="sal" DataType="System.Int32"/>
+      <Column Name="sabt_date" DataType="System.String"/>
+      <Column Name="malekname" DataType="System.String"/>
+      <Column Name="malekfname" DataType="System.String"/>
+      <Column Name="dastoor_no" DataType="System.String"/>
+      <Column Name="dastoor_date" DataType="System.String"/>
+      <Column Name="pelak_no" DataType="System.String"/>
+      <Column Name="metraj" DataType="System.Double"/>
+      <Column Name="daftar_no" DataType="System.String"/>
+      <Column Name="mantageh" DataType="System.String"/>
+      <Column Name="gorooh" DataType="System.String"/>
+      <Column Name="change" DataType="System.String"/>
+      <Column Name="metraj_gabl" DataType="System.Int32"/>
+      <Column Name="sal1" DataType="System.Int32"/>
+      <Column Name="Expr1" DataType="System.Int32"/>
+      <Column Name="comment" DataType="System.String"/>
+      <Column Name="n_tedad" DataType="System.Double"/>
+      <Column Name="tkoll" DataType="System.Double"/>
+      <Column Name="t_tedad" DataType="System.Double"/>
+      <Column Name="eng_full_name" DataType="System.String"/>
+      <Column Name="eng_mob" DataType="System.String"/>
+      <Column Name="malek_full_name" DataType="System.String"/>
+      <Column Name="pnezarat_cod" DataType="System.Int32"/>
+      <Column Name="ptarrahi_cod" DataType="System.Int32"/>
+    </TableDataSource>
+    <TableDataSource Name="dtbl1" ReferenceName="Ds_tayid_sabtnagshe1.dtbl1" DataType="System.Int32" Enabled="true">
+      <Column Name="arm_sazman" DataType="System.Byte[]" BindableControl="Picture"/>
+    </TableDataSource>
+    <Parameter Name="maliat_rate" DataType="System.String"/>
+    <Parameter Name="karbar_name" DataType="System.String"/>
+    <Parameter Name="comments" DataType="System.String"/>
+    <Parameter Name="sahm_nezarat" DataType="System.String"/>
+    <Parameter Name="sahm_tarrahi" DataType="System.String"/>
+    <Parameter Name="sahm_mojri" DataType="System.String"/>
+    <Parameter Name="sahm_mechanic_khak" DataType="System.String"/>
+    <Parameter Name="sum_sahm_1" DataType="System.String"/>
+    <Parameter Name="sahm_shanasname" DataType="System.String"/>
+    <Parameter Name="sahm_nezarat_eng" DataType="System.String"/>
+    <Parameter Name="sahm_nagshebardar" DataType="System.String"/>
+    <Parameter Name="sum_sahm_2" DataType="System.String"/>
+    <Parameter Name="maliyat_afzoodeh_shenasname" DataType="System.String"/>
+    <Parameter Name="sum_maliyat_afzoodeh" DataType="System.String"/>
+    <Parameter Name="tedad_tabage" DataType="System.String"/>
+    <Parameter Name="tedad_sagf" DataType="System.String"/>
+    <Parameter Name="trackcode" DataType="System.String"/>
+    <Parameter Name="maliyat_afzoodeh_sahm_nezarat" DataType="System.String"/>
+    <Parameter Name="maliyat_afzoodeh_sahm_tarrahi" DataType="System.String"/>
+    <Parameter Name="maliyat_afzoodeh_sahm_mojri" DataType="System.String"/>
+    <Parameter Name="pardakht_saderat" DataType="System.String"/>
+    <Parameter Name="pardakht_tejarat" DataType="System.String"/>
+    <Parameter Name="bedehi_saderat" DataType="System.String"/>
+    <Parameter Name="bedehi_tejarat" DataType="System.String"/>
+    <Parameter Name="kol_saderat" DataType="System.String"/>
+    <Parameter Name="kol_tejarat" DataType="System.String"/>
+    <Parameter Name="sumCol1" DataType="System.String"/>
+    <Parameter Name="sumCol2" DataType="System.String"/>
+    <Parameter Name="malek_mob_no" DataType="System.String"/>
+    <Parameter Name="malek_address" DataType="System.String"/>
+    <Parameter Name="malek_mellicode" DataType="System.String"/>
+    <Parameter Name="maliyat_arzesh_rate" DataType="System.String"/>
+    <Parameter Name="avarez_arzesh_rate" DataType="System.String"/>
+    <Parameter Name="avarez_afzoodeh_shenasname" DataType="System.String"/>
+    <Parameter Name="avarez_afzoodeh_sahm_nezarat" DataType="System.String"/>
+    <Parameter Name="avarez_afzoodeh_sahm_tarrahi" DataType="System.String"/>
+    <Parameter Name="avarez_afzoodeh_sahm_mojri" DataType="System.String"/>
+    <Parameter Name="sahm_sandog_hemayati" DataType="System.String"/>
+    <Parameter Name="shahrdari_name" DataType="System.String"/>
+    <Parameter Name="bank_sazman" DataType="System.String"/>
+    <Parameter Name="bank_erjaa" DataType="System.String"/>
+    <Parameter Name="varizi_bank_sazman" DataType="System.String"/>
+    <Parameter Name="varizi_bank_erjaa" DataType="System.String"/>
+    <Parameter Name="bank_sazman_motamarkez" DataType="System.String"/>
+    <Parameter Name="sum_sahm_daftar" DataType="System.String"/>
+    <Parameter Name="varizi_bank_sazman_ostan" DataType="System.String"/>
+    <Parameter Name="kol_tejarat_ostan" DataType="System.String"/>
+    <Parameter Name="bedehi_tejarat_ostan" DataType="System.String"/>
+    <Parameter Name="pardakht_tejarat_ostan" DataType="System.String"/>
+    <Parameter Name="Dprint" DataType="System.String"/>
+    <Parameter Name="avarez_afzoodeh_nagshebardar" DataType="System.String"/>
+    <Parameter Name="sahm_nagshebardar_sazman" DataType="System.String"/>
+    <Parameter Name="maliyat_afzoodeh_nagshebardar" DataType="System.String"/>
+    <Parameter Name="Sum_maliyat" DataType="System.String"/>
+    <Parameter Name="Sum_avarez" DataType="System.String"/>
+    <Parameter Name="sum_mablag_taaviz_naghshe" DataType="System.String"/>
+    <Parameter Name="maliyat_sum_mablag_taaviz_naghshe" DataType="System.String"/>
+    <Parameter Name="avarez_sum_mablag_taaviz_naghshe" DataType="System.String"/>
+    <Parameter Name="sahm_Geo_nazer" DataType="System.String"/>
+    <Parameter Name="maliyat_mechanic_khak" DataType="System.String"/>
+    <Parameter Name="avarez_mechanic_khak" DataType="System.String"/>
+    <Parameter Name="dossierNumber" DataType="System.String"/>
+    <Parameter Name="sum_khak" DataType="System.String"/>
+    <Parameter Name="controlTarrahLabel" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" LeftMargin="5" TopMargin="5" RightMargin="5" BottomMargin="5" FirstPageSource="15" OtherPagesSource="15" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="756" Height="226.8">
+      <ShapeObject Name="Shape6" Top="117.44" Width="189" Height="52.66" Border.Width="0.25" Fill.Color="Gainsboro"/>
+      <ShapeObject Name="Shape1" Width="189" Height="113.4" Border.Width="0.25" Fill.Color="Gainsboro"/>
+      <TextObject Name="Text1" Left="321.3" Width="94.5" Height="18.9" Text="بسمه تعالي" HorzAlign="Center" Font="B Nazanin, 10pt"/>
+      <TextObject Name="Text2" Left="264.6" Top="18.9" Width="207.9" Height="37.8" Fill.Color="Gainsboro" Text="فرم تاييديه ثبت كامپيوتري" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 12pt, style=Bold"/>
+      <TextObject Name="Text3" Left="500.85" Top="69.15" Width="245.7" Height="18.9" Text=": نقشه هاي ساختماني مربوط به ملك با پلاك ثبتي" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text4" Left="680.4" Top="89.05" Width="66.15" Height="18.9" Text=": به مالكيت" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text5" Left="557.55" Top="125.85" Width="189" Height="18.9" Text="و دستور تهيه نقشه از شهرداري منطقه" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text7" Left="283.5" Top="125.85" Width="47.25" Height="18.9" Text="و تاريخ" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text8" Left="207.9" Top="144.75" Width="538.65" Height="18.9" Text="در سيستم مكانيزه واحد كنترل طراحي ثبت گرديد " HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text9" Left="113.4" Top="9.45" Width="66.15" Height="18.9" Text=": تاريخ ثبت" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text10" Left="113.4" Top="28.35" Width="66.15" Height="18.9" Text=": شماره ثبت" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text11" Left="113.4" Top="47.25" Width="85.05" Height="18.9" Text=": وضعيت نقشه" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text12" Left="113.4" Top="66.15" Width="75.6" Height="18.9" Text=": گروه نقشه" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text13" Left="113.4" Top="85.05" Width="75.6" Height="18.9" Text=": متراژ نقشه" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line47" Top="170.1" Width="756"/>
+      <PictureObject Name="Picture1" Left="652.05" Top="-9.45" Width="85.05" Height="75.6" DataColumn="dtbl1.arm_sazman"/>
+      <TextObject Name="Text70" Left="47.25" Top="28.35" Width="66.15" Height="18.9" Text="[tbl_change.sabt_no]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text73" Left="9.45" Top="9.45" Width="103.95" Height="18.9" Text="[tbl_change.sabt_date]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text76" Left="529.2" Top="125.85" Width="37.8" Height="18.9" Text="[tbl_change.mantageh]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text77" Left="330.75" Top="125.85" Width="94.5" Height="18.9" Text="[tbl_change.dastoor_no]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text78" Left="198.45" Top="125.85" Width="85.05" Height="18.9" Text="[tbl_change.dastoor_date]" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text79" Left="207.9" Top="69.15" Width="292.95" Height="18.9" Text="[tbl_change.pelak_no]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text80" Left="9.45" Top="85.05" Width="103.95" Height="18.9" Text="[tbl_change.metraj]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="" Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 11pt, style=Bold" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text22" Left="349.65" Top="89.05" Width="330.75" Height="18.9" Text="[tbl_change.malek_full_name]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text84" Left="18.9" Top="66.15" Width="94.5" Height="18.9" Text="[tbl_change.gorooh]" HorzAlign="Right" WordWrap="false" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text85" Left="18.9" Top="47.25" Width="94.5" Height="18.9" Text="[tbl_change.change]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text94" Left="47.25" Top="122.85" Width="141.75" Height="18.9" Text=": تعداد سقف از روي شالوده" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text95" Left="47.25" Top="141.75" Width="141.75" Height="18.9" Text=": تعداد طبقات از روي زمين" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text48" Top="122.85" Width="47.25" Height="18.9" Text="[tedad_sagf]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 11pt, style=Bold" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text92" Top="141.75" Width="47.25" Height="18.9" Text="[tedad_tabage]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 11pt, style=Bold" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text130" Top="170.1" Width="756" Height="47.25" Border.Lines="All" Text="اطلاعات سازمان &#13;&#10;كد اقتصادي :411333944144      كدپستي:94636-57157        شناسنامه ملي :14009050860        آدرس: خيابان عمار-خيابان حج" Padding="2, 0, 10, 0" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text131" Left="283.5" Top="89.05" Width="66.15" Height="18.9" Text=": تلفن مالك" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text132" Left="670.95" Top="107.95" Width="75.6" Height="18.9" Text=": آدرس مالك" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text14" Left="359.1" Top="107.95" Width="321.3" Height="18.9" Text="[malek_address]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text15" Left="189" Top="90.05" Width="94.5" Height="18.9" Text="[malek_mob_no]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text133" Left="283.5" Top="107.95" Width="75.6" Height="18.9" Text=": كدملي مالك" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text16" Left="189" Top="107.95" Width="94.5" Height="18.9" Text="[malek_mellicode]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text63" Left="425.25" Top="122.85" Width="103.95" Height="28.35" Text="[shahrdari_name]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+    </ReportTitleBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="228.8" Width="756" Height="614.25">
+      <ShapeObject Name="Shape4" Top="37.8" Width="756" Height="321.3"/>
+      <ShapeObject Name="Shape7" Top="425.25" Width="756" Height="189"/>
+      <TextObject Name="Text21" Left="652.05" Top="378" Width="94.5" Height="18.9" Text=": توضيحات مالي" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text75" Left="-9.45" Top="378" Width="661.5" Height="18.9" Fill.Color="Gainsboro" Text="[comments]" HorzAlign="Right" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text31" Top="47.25" Width="170.1" Height="28.35" Text="تاييد مالي" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <LineObject Name="Line14" Left="170.1" Top="37.8" Height="189" Border.Width="0.25"/>
+      <LineObject Name="Line22" Left="283.5" Top="37.8" Height="189" Border.Width="0.25"/>
+      <LineObject Name="Line23" Left="718.2" Top="37.8" Height="170.1" Border.Width="0.5"/>
+      <TextObject Name="Text27" Left="718.2" Top="37.8" Width="37.8" Height="37.8" Text="رديف" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text28" Left="576.45" Top="37.8" Width="141.75" Height="37.8" Text="شرح" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text29" Left="444.15" Top="37.8" Width="132.3" Height="37.8" Text="مبلغ قابل پرداخت" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text30" Left="170.1" Top="37.8" Width="113.4" Height="37.8" Text="بانك حساب جاري" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text32" Left="330.75" Top="37.8" Width="94.5" Height="18.9" Text="ماليات بر ارزش افزوده " VertAlign="Center" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text57" Left="302.4" Top="37.8" Width="28.35" Height="18.9" Text="[maliat_rate]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line15" Top="75.6" Width="756"/>
+      <TextObject Name="Text33" Left="718.2" Top="75.6" Width="37.8" Height="18.9" Text="1" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text41" Left="576.45" Top="75.6" Width="141.75" Height="18.9" Text="كنترل سهم نظارت" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text87" Left="453.6" Top="75.6" Width="113.4" Height="18.9" Text="[sahm_nezarat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line16" Left="283.5" Top="94.5" Width="472.5" Border.Width="0.25"/>
+      <LineObject Name="Line17" Left="283.5" Top="113.4" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text34" Left="718.2" Top="94.5" Width="37.8" Height="18.9" Text="2" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text35" Left="718.2" Top="113.4" Width="37.8" Height="18.9" Text="3" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text43" Left="576.45" Top="113.4" Width="141.75" Height="18.9" Text="بیمه مجري ذيصلاح" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text88" Left="453.6" Top="94.5" Width="113.4" Height="18.9" Text="[sahm_tarrahi]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text89" Left="453.6" Top="113.4" Width="113.4" Height="18.9" Text="[sahm_mojri]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line18" Left="283.5" Top="132.3" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text36" Left="718.2" Top="132.3" Width="37.8" Height="18.9" Text="4" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text44" Left="576.45" Top="302.4" Width="141.75" Height="18.9" Text="مكانيك خاك" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text90" Left="444.15" Top="302.4" Width="132.3" Height="18.9" Text="[sahm_mechanic_khak]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text68" Left="444.15" Top="264.6" Width="132.3" Height="18.9" Fill.Color="Gainsboro" Text="[sahm_nagshebardar]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line19" Left="283.5" Top="151.2" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text37" Left="718.2" Top="151.2" Width="37.8" Height="18.9" Text="5" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text54" Left="576.45" Top="264.6" Width="141.75" Height="18.9" Text="نظارت نقشه برداري" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text38" Left="718.2" Top="170.1" Width="37.8" Height="18.9" Text="6" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text67" Left="453.6" Top="132.3" Width="113.4" Height="18.9" Text="[sahm_shanasname]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text46" Left="576.45" Top="132.3" Width="141.75" Height="18.9" Text="شناسنامه فني و ملكي" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line26" Left="283.5" Top="189" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text93" Left="359.1" Top="132.3" Width="85.05" Height="18.9" Text="[maliyat_afzoodeh_shenasname]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text59" Left="444.15" Top="245.7" Width="132.3" Height="18.9" Fill.Color="Gainsboro" Text="[sahm_nezarat_eng]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text47" Left="576.45" Top="245.7" Width="141.75" Height="18.9" Text="حق الزحمه نظارت مهندسين" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line27" Left="170.1" Top="226.8" Width="585.9" Border.Width="1.5"/>
+      <LineObject Name="Line28" Left="170.1" Top="245.7" Width="585.9"/>
+      <TextObject Name="Text49" Left="718.2" Top="245.7" Width="37.8" Height="18.9" Text="8" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line29" Left="170.1" Top="283.5" Width="585.9" Fill.Color="Gainsboro"/>
+      <LineObject Name="Line30" Left="170.1" Top="302.4" Width="585.9" Border.Width="0.25"/>
+      <LineObject Name="Line31" Left="283.5" Top="321.3" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text55" Left="718.2" Top="321.3" Width="37.8" Height="18.9" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text56" Left="576.45" Top="321.3" Width="141.75" Height="18.9" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text97" Left="359.1" Top="75.6" Width="85.05" Height="18.9" Text="[maliyat_afzoodeh_sahm_nezarat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text98" Left="359.1" Top="94.5" Width="85.05" Height="18.9" Text="[maliyat_afzoodeh_sahm_tarrahi]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text99" Left="359.1" Top="113.4" Width="85.05" Height="18.9" Text="[maliyat_afzoodeh_sahm_mojri]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text45" Left="576.45" Top="207.9" Width="179.55" Height="18.9" Text="قابل پرداخت" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text58" Left="283.5" Top="207.9" Width="292.95" Height="18.9" Border.Lines="All" Fill.Color="Gainsboro" Text="[sum_sahm_1]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line32" Left="576.45" Top="245.7" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line33" Left="444.15" Top="245.7" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line34" Left="283.5" Top="245.7" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line35" Left="718.2" Top="245.7" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line36" Left="170.1" Top="302.4" Height="56.7" Border.Width="0.25"/>
+      <LineObject Name="Line24" Left="444.15" Top="37.8" Height="170.1" Border.Width="0.25"/>
+      <LineObject Name="Line21" Left="576.45" Top="37.8" Height="170.1" Border.Width="0.25"/>
+      <LineObject Name="Line1" Left="765.45" Top="406.35" Width="-793.8" Border.Width="3" Diagonal="true"/>
+      <LineObject Name="Line37" Left="765.45" Top="368.55" Width="-793.8" Border.Width="3" Diagonal="true"/>
+      <LineObject Name="Line39" Left="198.45" Top="425.25" Height="189" Border.Width="0.25"/>
+      <LineObject Name="Line40" Left="708.75" Top="425.25" Height="189"/>
+      <TextObject Name="Text102" Left="708.75" Top="425.25" Width="47.25" Height="28.35" Text="رديف" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text103" Left="567" Top="425.25" Width="141.75" Height="28.35" Text="شرح" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text104" Left="387.45" Top="425.25" Width="179.55" Height="28.35" Text="مبلغ قابل پرداخت" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text105" Top="425.25" Width="198.45" Height="28.35" Text="تاييد مالي" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <LineObject Name="Line41" Top="453.6" Width="756"/>
+      <TextObject Name="Text108" Left="708.75" Top="463.05" Width="47.25" Height="18.9" Text="1" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text110" Left="415.8" Top="463.05" Width="113.4" Height="18.9" Text="[kol_tejarat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line42" Top="491.4" Width="756" Border.Width="0.25"/>
+      <TextObject Name="Text115" Left="415.8" Top="538.65" Width="113.4" Height="18.9" Text="[kol_saderat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text121" Left="236.25" Top="463.05" Width="113.4" Height="18.9" Visible="false" Text="[pardakht_tejarat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text122" Left="236.25" Top="538.65" Width="113.4" Height="18.9" Visible="false" Text="[pardakht_saderat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line45" Left="387.45" Top="425.25" Height="189" Border.Width="0.25"/>
+      <LineObject Name="Line46" Left="567" Top="425.25" Height="189" Border.Width="0.25"/>
+      <TextObject Name="Text123" Left="708.75" Top="500.85" Width="47.25" Height="18.9" Text="2" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text124" Left="198.45" Top="425.25" Width="189" Height="28.35" Text="توضيحات" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 11pt, style=Bold"/>
+      <TextObject Name="Text125" Left="37.8" Top="463.05" Width="113.4" Height="18.9" Visible="false" Text="[bedehi_tejarat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text126" Left="37.8" Top="538.65" Width="113.4" Height="18.9" Visible="false" Text="[bedehi_saderat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text96" Width="292.95" Height="37.8" Visible="false" Fill.Color="Gainsboro" Text="كد رهگيري: [trackcode]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 12pt, style=Bold"/>
+      <TextObject Name="Text127" Left="444.15" Top="189" Width="132.3" Height="18.9" Text="[sumCol1]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text129" Left="576.45" Top="189" Width="141.75" Height="18.9" Text="جمع" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line49" Left="283.5" Top="170.1" Width="472.5" Border.Width="0.25"/>
+      <LineObject Name="Line4" Left="283.5" Top="56.7" Width="160.65" Border.Width="0.5"/>
+      <LineObject Name="Line5" Left="360.1" Top="56.7" Height="151.2" Border.Width="0.5"/>
+      <TextObject Name="Text138" Left="396.9" Top="56.7" Width="47.25" Height="18.9" Text="ماليات" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text139" Left="321.3" Top="56.7" Width="37.8" Height="18.9" Text="عوارض" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text17" Left="359.1" Top="56.7" Width="37.8" Height="18.9" Text="[maliyat_arzesh_rate]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text18" Left="283.5" Top="56.7" Width="37.8" Height="18.9" Text="[avarez_arzesh_rate]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text19" Left="283.5" Top="132.3" Width="75.6" Height="18.9" Text="[avarez_afzoodeh_shenasname]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text20" Left="283.5" Top="75.6" Width="75.6" Height="18.9" Text="[avarez_afzoodeh_sahm_nezarat]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text23" Left="283.5" Top="94.5" Width="75.6" Height="18.9" Text="[avarez_afzoodeh_sahm_tarrahi]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text24" Left="283.5" Top="113.4" Width="75.6" Height="18.9" Text="[avarez_afzoodeh_sahm_mojri]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <LineObject Name="Line50" Left="283.5" Top="226.8" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text140" Left="718.2" Top="189" Width="37.8" Height="18.9" Text="7" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text40" Left="170.1" Top="302.4" Width="113.4" Height="18.9" Text="[bank_sazman_motamarkez]" HorzAlign="Center" Font="B Nazanin, 9pt, style=Bold"/>
+      <TextObject Name="Text50" Left="170.1" Top="245.7" Width="113.4" Height="18.9" Text="[bank_erjaa]" HorzAlign="Center" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text61" Left="567" Top="463.05" Width="141.75" Height="28.35" Text="[varizi_bank_sazman]" HorzAlign="Right" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text52" Left="567" Top="538.65" Width="141.75" Height="18.9" Text="[varizi_bank_erjaa]" HorzAlign="Right" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text6" Left="170.1" Top="75.6" Width="113.4" Height="28.35" Text="[bank_sazman_motamarkez]" HorzAlign="Center" WordWrap="false" Font="B Nazanin, 9pt, style=Bold"/>
+      <TextObject Name="Text143" Left="718.2" Top="264.6" Width="37.8" Height="18.9" Text="9" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text144" Left="718.2" Top="302.4" Width="37.8" Height="18.9" Text="10" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text145" Left="708.75" Top="538.65" Width="47.25" Height="18.9" Text="3" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line51" Top="529.2" Width="756" Border.Width="0.25"/>
+      <TextObject Name="Text53" Left="567" Top="500.85" Width="141.75" Height="28.35" Text="[varizi_bank_erjaa]" HorzAlign="Right" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text62" Left="415.8" Top="500.85" Width="113.4" Height="18.9" Text="[kol_tejarat_ostan]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text64" Left="37.8" Top="500.85" Width="113.4" Height="18.9" Visible="false" Text="[bedehi_tejarat_ostan]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text65" Left="236.25" Top="500.85" Width="113.4" Height="18.9" Visible="false" Text="[pardakht_tejarat_ostan]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line48" Left="283.5" Top="207.9" Width="472.5" Border.Width="0.25"/>
+      <TextObject Name="Text148" Left="576.45" Top="151.2" Width="141.75" Height="18.9" Text="كنترل نظارت نقشه برداري" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text149" Left="453.6" Top="151.2" Width="113.4" Height="18.9" Text="[sahm_nagshebardar_sazman]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text150" Left="359.1" Top="151.2" Width="85.05" Height="18.9" Text="[maliyat_afzoodeh_nagshebardar]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text151" Left="283.5" Top="151.2" Width="75.6" Height="18.9" Text="[avarez_afzoodeh_nagshebardar]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" AutoShrink="FontSize" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text25" Left="359.1" Top="189" Width="85.05" Height="18.9" Text="[Sum_maliyat]" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text66" Left="283.5" Top="189" Width="75.6" Height="18.9" Text="[Sum_avarez]" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text152" Left="576.45" Top="170.1" Width="141.75" Height="18.9" Text="كنترل طراحی تعویض نقشه" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text153" Left="453.6" Top="170.1" Width="113.4" Height="18.9" Text="[sum_mablag_taaviz_naghshe]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text154" Left="359.1" Top="170.1" Width="85.05" Height="18.9" Text="[maliyat_sum_mablag_taaviz_naghshe]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text155" Left="283.5" Top="170.1" Width="75.6" Height="18.9" CanBreak="false" Text="[avarez_sum_mablag_taaviz_naghshe]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text156" Left="444.15" Top="321.3" Width="132.3" Height="18.9" Text="[sahm_Geo_nazer]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text157" Left="576.45" Top="321.3" Width="141.75" Height="18.9" Text="نظارت ژئونکنیک" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text158" Left="359.1" Top="302.4" Width="85.05" Height="18.9" Text="[maliyat_mechanic_khak]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text159" Left="283.5" Top="302.4" Width="75.6" Height="18.9" Text="[avarez_mechanic_khak]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 8pt, style=Bold"/>
+      <TextObject Name="Text160" Left="718.2" Top="321.3" Width="37.8" Height="18.9" Text="11" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line52" Left="283.5" Top="245.7" Width="472.5" Fill.Color="Gainsboro"/>
+      <LineObject Name="Line53" Left="359.1" Top="245.7" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line54" Left="283.5" Top="340.2" Width="472.5" Fill.Color="Gainsboro"/>
+      <TextObject Name="Text161" Left="576.45" Top="340.2" Width="141.75" Height="18.9" Text="جمع ردیف 10 و 11" HorzAlign="Right" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text162" Left="718.2" Top="340.2" Width="37.8" Height="18.9" Text="12" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text163" Left="463.05" Width="292.95" Height="37.8" Fill.Color="Gainsboro" Text="كد سامانه جامع: [dossierNumber]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 12pt, style=Bold"/>
+      <TextObject Name="Text164" Left="283.5" Top="340.2" Width="292.95" Height="18.9" Border.Lines="All" Border.Width="0.5" Fill.Color="Gainsboro" Text="[sum_khak]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line55" Left="283.5" Top="264.6" Width="472.5" Border.Width="0.25"/>
+      <LineObject Name="Line56" Left="576.45" Top="302.4" Height="56.7" Border.Width="0.25"/>
+      <LineObject Name="Line57" Left="718.2" Top="302.4" Height="56.7" Border.Width="0.25"/>
+      <LineObject Name="Line58" Left="444.15" Top="302.4" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line59" Left="359.1" Top="302.4" Height="37.8" Border.Width="0.25"/>
+      <LineObject Name="Line60" Top="567" Width="756" Border.Width="0.25"/>
+      <TextObject Name="Text165" Left="708.75" Top="576.45" Width="47.25" Height="18.9" Text="4" HorzAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line61" Left="283.5" Top="302.4" Height="56.7" Border.Width="0.25"/>
+      <TextObject Name="Text166" Left="567" Top="576.45" Width="141.75" Height="28.35" Text="[varizi_bank_sazman]" HorzAlign="Right" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <TextObject Name="Text167" Left="415.8" Top="576.45" Width="113.4" Height="18.9" Text="[sum_khak]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="3" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line62" Left="170.1" Top="245.7" Height="37.8" Border.Width="0.25"/>
+      <TextObject Name="Text168" Left="576.45" Top="94.5" Width="141.75" Height="18.9" Text="[controlTarrahLabel]" VertAlign="Center" RightToLeft="true" WordWrap="false" Font="B Nazanin, 10pt, style=Bold"/>
+    </ReportSummaryBand>
+    <PageFooterBand Name="PageFooter1" Top="845.05" Width="756" Height="170.1">
+      <TextObject Name="Text60" Left="604.8" Top="113.4" Width="103.95" Height="18.9" Text="[karbar_name]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 6pt, style=Bold"/>
+      <TextObject Name="Text26" Left="708.75" Top="113.4" Width="37.8" Height="18.9" Text=": كاربر" VertAlign="Center" Font="B Nazanin, 6pt, style=Bold"/>
+      <TextObject Name="Text100" Top="113.4" Width="604.8" Height="56.7" Visible="false" Text="لطفاً جهت پرداخت آنلاين مبالغ اين نقشه از طريق وبسايت سازمان به آدرس زير مراجعه نموده از بخش سيستم هاي سازمان از صفحه اصلي وارد دفاتر فني و مهندسي شده و روي گزينه پرداخت مالي نقشه كليك نماييد. سپس با وارد نمودن كد رهگيري نقشه اقدام به پرداخت نماييد&#13;&#10; http://wa-nezam.org آدرس سايت سازمان" HorzAlign="Right" Font="B Nazanin, 9pt, style=Bold"/>
+      <ShapeObject Name="Shape2" Left="387.45" Width="368.55" Height="94.5" Border.Width="0.5"/>
+      <TextObject Name="Text134" Left="567" Width="189" Height="28.35" Text="تائيد كنترل نقشه معماري" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line2" Left="387.45" Top="28.35" Width="368.55" Border.Width="0.5"/>
+      <TextObject Name="Text135" Left="658.5" Top="32.35" Width="94.5" Height="28.35" Text=": گروه ساختماني" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 9pt, style=Bold"/>
+      <TextObject Name="Text136" Left="684.85" Top="61.15" Width="66.15" Height="28.35" Text=": متراژ نقشه" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 9pt, style=Bold"/>
+      <TextObject Name="Text137" Left="387.45" Width="179.55" Height="28.35" Text="امضا كنترل كننده معماري" HorzAlign="Center" VertAlign="Center" Font="B Nazanin, 10pt, style=Bold"/>
+      <LineObject Name="Line3" Left="567" Height="94.5" Border.Width="0.5"/>
+      <TextObject Name="Text146" Left="604.8" Top="132.3" Width="94.5" Height="18.9" Text="[Dprint]" HorzAlign="Right" VertAlign="Center" Font="B Nazanin, 6pt, style=Bold"/>
+      <TextObject Name="Text147" Left="699.3" Top="132.3" Width="47.25" Height="18.9" Text=": تاريخ چاپ" VertAlign="Center" Font="B Nazanin, 6pt, style=Bold"/>
+      <TextObject Name="Text69" Left="9.45" Top="18.9" Width="349.65" Height="75.6" Fill.Color="DarkGray" Text="مدت اعتبار اين برگه از تاريخ ثبت به مدت سه ماه مي باشد، طي اين مدت نيز در صورت تغيير ضوابط يا تغيير تعرفه ها بروزرساني خواهد شد." HorzAlign="Justify" VertAlign="Center" RightToLeft="true" Font="B Nazanin, 11pt, style=Bold"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>
