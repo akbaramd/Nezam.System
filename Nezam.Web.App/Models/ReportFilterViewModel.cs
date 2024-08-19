@@ -17,10 +17,10 @@ public class ReportFilterViewModel
   [Required(ErrorMessage = "نوع پرونده را انتخاب کنید")]
   public int SelectedDossierTypeId { get; set; }
 
-  public IEnumerable<SelectListItem> DossierTypes { get; set; } = new List<SelectListItem>();
+  public List<SelectListItem> DossierTypes { get; set; } = new List<SelectListItem>();
 
   [Required(ErrorMessage = "شهر را انتخاب کنید")]
   public int SelectedSyncCode { get; set; } = default!;
 
-  public IEnumerable<SelectListItem> Cities { get; set; } = new List<SelectListItem>();
+  public List<SelectListItem> Cities { get; set; } = new List<SelectListItem>();
 }

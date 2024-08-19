@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Velzon.Data;
 using Velzon.Data.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Velzon.Data.Cedo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,8 @@ builder.Services.AddRazorPages();
 // Add DbContext with SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddDbContext<CedoContext>(options =>
+  options.UseSqlServer(builder.Configuration.GetConnectionString("CedoConnection")));
 // Add Identity services
 builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 {

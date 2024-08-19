@@ -16,8 +16,9 @@
     <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2024.2.14" />
     <PackageReference Include="FastReport.OpenSource.Web" Version="2024.2.14" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -202,23 +203,20 @@
     <_ContentIncludedByDefault Remove="Views\Tasks\TaskDetails.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Widgets\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Report\DossierWithoutExecuterReport.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Pages\Shared\Components\UserProfile\Default.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\Error.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_customizer.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_footer.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_head_css.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_Layout.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_LayoutAuth.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_menu.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_page_title.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_sidebar.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_title_meta.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_topbar.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_ValidationScriptsPartial.cshtml" />
-    <AdditionalFiles Include="Pages\Shared\_vendor_scripts.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\Components\UserProfile\Default.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\Error.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_customizer.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_footer.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_head_css.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_LayoutAuth.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_menu.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_page_title.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_sidebar.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_title_meta.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_topbar.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_ValidationScriptsPartial.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Shared\_vendor_scripts.cshtml" />
   </ItemGroup>
 
 

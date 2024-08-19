@@ -13,17 +13,14 @@ ViewData["Title"] = "گزارش پرونده‌های بدون مجری";
             <div class="card-body">
                 <form id="reportForm" method="post" asp-page-handler="GenerateReport">
                     <div class="mb-3">
-                        <label asp-for="FilterModel.DossierNumber" class="form-label">تاریخ شروع (هجری شمسی)</label>
-                        <input asp-for="FilterModel.DossierNumber"  class="form-control" type="text" />
+                        <label asp-for="FilterModel.DossierNumber" class="form-label">شماره پرونده</label>
+                        <input asp-for="FilterModel.DossierNumber" class="form-control" type="text" />
                         <span asp-validation-for="FilterModel.DossierNumber" class="text-danger"></span>
                     </div>
-
-                   
 
                     <button type="submit" class="btn btn-primary">نمایش گزارش</button>
                 </form>
             </div>
-            
         </div>
 
         @if (Model.WebReport != null)
@@ -45,7 +42,13 @@ ViewData["Title"] = "گزارش پرونده‌های بدون مجری";
     </div>
 
     <div class="col-9">
-        @if (Model.WebReport != null)
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+        }
+        else if (Model.WebReport != null)
         {
         @await Model.WebReport.Render()
         }
