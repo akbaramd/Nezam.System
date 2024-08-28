@@ -6,32 +6,31 @@
     @RenderSection("styles", required: false)
     <partial name="~/Views/Shared/_head_css.cshtml"/>
 </head>
-<body lang="fa">
-    <!-- Begin page -->
-    <div id="layout-wrapper">
-        <partial name="~/Views/Shared/_menu.cshtml"/>
 
-        <!-- ============================================================== -->
-        <!-- Start right Content here -->
-        <!-- ============================================================== -->
-        <div class="main-content">
+<body data-lang="fa">
+<!-- Begin page -->
+<div id="layout-wrapper">
+    <partial name="~/Views/Shared/_menu.cshtml"/>
 
-            <div class="page-content">
-                <div class="container-fluid">
-                    <partial name="~/Views/Shared/_page_title.cshtml"/>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="main-content">
 
-                    @RenderBody()
-                </div>
+        <div class="page-content">
+            <div class="container-fluid">
+                <partial name="~/Views/Shared/_page_title.cshtml"/>
+
+                @RenderBody()
             </div>
-            <partial name="~/Views/Shared/_footer.cshtml"/>
         </div>
-
+        <partial name="~/Views/Shared/_footer.cshtml"/>
     </div>
-    <!-- END layout-wrapper -->
-    <partial name="~/Views/Shared/_customizer.cshtml"/>
 
-    <partial name="~/Views/Shared/_vendor_scripts.cshtml"/>
+</div>
 
-    @RenderSection("scripts", required: false)
+<partial name="~/Views/Shared/_vendor_scripts.cshtml"/>
+
+@RenderSection("scripts", required: false)
 </body>
 </html>

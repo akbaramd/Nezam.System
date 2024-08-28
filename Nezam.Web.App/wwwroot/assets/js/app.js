@@ -22,6 +22,7 @@ File: Main Js File
 		// Set new language
 		(language === null) ? setLanguage(default_lang) : setLanguage(language);
 		var languages = document.getElementsByClassName("language");
+		console.log(language)
 		languages && Array.from(languages).forEach(function (dropdown) {
 			dropdown.addEventListener("click", function (event) {
 				setLanguage(dropdown.getAttribute("data-lang"));
@@ -33,24 +34,24 @@ File: Main Js File
 		console.log(lang)
 		if (document.getElementById("header-lang-img")) {
 			if (lang == "en") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/us.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/us.svg";
 			} else if (lang == "sp") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/spain.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/spain.svg";
 			}
 			else if (lang == "gr") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/germany.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/germany.svg";
 			}else if (lang == "fa") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/ir.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/ir.svg";
 			} else if (lang == "it") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/italy.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/italy.svg";
 			} else if (lang == "ru") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/russia.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/russia.svg";
 			} else if (lang == "ch") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/china.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/china.svg";
 			} else if (lang == "fr") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/french.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/french.svg";
 			} else if (lang == "ar") {
-				document.getElementById("header-lang-img").src = "assets/images/flags/ae.svg";
+				document.getElementById("header-lang-img").src = "/assets/images/flags/ae.svg";
 			}
 			localStorage.setItem("language", lang);
 			language = localStorage.getItem("language");
@@ -63,7 +64,7 @@ File: Main Js File
 		language == null ? setLanguage(default_lang) : false;
 		var request = new XMLHttpRequest();
 		// Instantiating the request object
-		request.open("GET", "assets/lang/" + language + ".json");
+		request.open("GET", "/assets/lang/" + language + ".json");
 		// Defining event listener for readystatechange event
 		request.onreadystatechange = function () {
 			// Check if the request is compete and was successful

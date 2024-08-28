@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Velzon.Data.Models;
+using Nezam.System.Web.Data.Models;
 
-namespace Velzon.Data;
+namespace Nezam.System.Web.Data;
 
 public class AppDbContext : IdentityDbContext<User,IdentityRole<Guid>,Guid>
 {

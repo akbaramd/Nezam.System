@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DevExpress.Xpo;
 using Microsoft.EntityFrameworkCore;
 
-namespace Velzon.Data.Cedo;
+namespace Nezam.System.Web.Data.Cedo;
 
 public partial class ConstructionLicense
 {

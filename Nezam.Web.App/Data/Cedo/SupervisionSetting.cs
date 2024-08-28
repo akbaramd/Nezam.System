@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Velzon.Data.Cedo;
+namespace Nezam.System.Web.Data.Cedo;
 
 public partial class SupervisionSetting
 {

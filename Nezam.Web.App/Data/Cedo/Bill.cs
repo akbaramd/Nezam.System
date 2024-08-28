@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DevExpress.Xpo;
 
-namespace Velzon.Data.Cedo;
+namespace Nezam.System.Web.Data.Cedo;
 
 public partial class Bill
 {

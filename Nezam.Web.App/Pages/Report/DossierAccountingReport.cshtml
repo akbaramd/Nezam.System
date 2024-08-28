@@ -1,64 +1,152 @@
 ﻿@page
-@model Velzon.Pages.Report.DossierAccountingReport
+@model DossierAccountingReport
 @{
-ViewData["Title"] = "گزارش پرونده‌های بدون مجری";
+    ViewBag.ptitle = "گزارشات مالی";
+    ViewBag.pagetitle = "گزارش صورت حساب پرونده ها";
+}
+
+@section styles{
+    <!-- Sweet Alert css-->
+    <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+
 }
 
 <div class="row">
-    <div class="col-3">
+    <div class="col-lg-3">
         <div class="card">
             <div class="card-header">
                 <h4 class="mb-0">فیلتر گزارش</h4>
             </div>
             <div class="card-body">
-                <form id="reportForm" method="post" asp-page-handler="GenerateReport">
+                <form id="reportForm" method="post" data-ajax="true" data-ajax-method="post" data-ajax-begin="onReportStart" data-ajax-success="onReportGenerated" data-ajax-failure="onReportFailed" data-ajax-complete="onReportComplete">
                     <div class="mb-3">
                         <label asp-for="FilterModel.DossierNumber" class="form-label">شماره پرونده</label>
-                        <input asp-for="FilterModel.DossierNumber" class="form-control" type="text" />
+                        <input asp-for="FilterModel.DossierNumber" class="form-control" type="text" id="dossierNumberInput"/>
                         <span asp-validation-for="FilterModel.DossierNumber" class="text-danger"></span>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">نمایش گزارش</button>
+                    <button type="submit" class="btn btn-primary w-100">نمایش گزارش</button>
                 </form>
+
+                <div id="reportActions" class="d-flex mt-2 d-none gap-2">
+                    <form class="flex-grow-1" id="downloadPdfForm" method="post" asp-page-handler="DownloadPdf">
+                        <input type="hidden" name="dossierNumber" id="dossierNumberHiddenInput"/>
+                        <button type="submit" class="btn btn-dark w-100">دانلود PDF</button>
+                    </form>
+                    <button type="button" class="flex-grow-1 btn btn-light " id="printButton">چاپ</button>
+                </div>
             </div>
         </div>
 
-        @if (Model.WebReport != null)
-        {
-        <div class="card mt-3">
-            <div class="card-header">
-                <h4 class="mb-0">@ViewBag.Title</h4>
-            </div>
-            <div class="card-body">
-                <form asp-page-handler="DownloadPdf" method="post">
-                    <input type="hidden" asp-for="FilterModel.DossierNumber"/>
-                    <button type="submit" class="btn btn-danger">دانلود PDF</button>
-                </form>
 
-                <button type="button" class="btn btn-secondary mt-2" id="printButton">چاپ</button>
-            </div>
-        </div>
-        }
     </div>
 
-    <div class="col-9">
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-        <div class="alert alert-danger">
-            @Model.ErrorMessage
-        </div>
-        }
-        else if (Model.WebReport != null)
-        {
-        @await Model.WebReport.Render()
-        }
-        else
-        {
-        <div class="card">
-            <div class="card-body">
-                <p>لطفاً فیلترهای گزارش را مشخص کنید و بر روی "نمایش گزارش" کلیک کنید.</p>
+    <div class="col-lg-9">
+        <div id="reportContent">
+            <div class="card">
+                <div class="card-body">
+                    <p>لطفاً فیلترهای گزارش را مشخص کنید و بر روی "نمایش گزارش" کلیک کنید.</p>
+                </div>
             </div>
         </div>
-        }
     </div>
 </div>
+
+@section scripts {
+    <!-- App js -->
+    <script src="/assets/js/app.js"></script>
+    <!-- SweetAlert2 js -->
+    <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <!-- jQuery -->
+    <script>
+    function onReportStart() {
+        Swal.fire({
+            title: 'در حال تولید گزارش...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
+
+    function onReportComplete() {
+        Swal.close();
+    }
+
+    function onReportGenerated(response) {
+        if (response.success) {
+            $('#reportContent').html(response.reportHtml);
+            $('#reportActions').removeClass('d-none');
+            $('#dossierNumberHiddenInput').val($('#dossierNumberInput').val()); // Set dossier number in hidden input
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا!',
+                text: response.errorMessage
+            });
+        }
+    }
+
+    function onReportFailed() {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطا!',
+            text: 'خطایی در تولید گزارش به وجود آمد.'
+        });
+    }
+
+    $(document).ready(function () {
+        $('#printButton').click(function () {
+            var printContents = document.getElementById('reportContent').innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            // Create a temporary iframe for printing
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print Report</title>
+                <style>
+                    @@page {
+                        size: A4;
+                        margin: 20mm;
+                    }
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        font-family: Arial, sans-serif;
+                    }
+                    .card {
+                        border: none;
+                        box-shadow: none;
+                        page-break-inside: avoid;
+                    }
+                    #reportContent {
+                        margin: 0;
+                        padding: 0;
+                        width: 100%;
+                    }
+                    .card-body {
+                        padding: 0;
+                        margin: 0;
+                        width: 100%;
+                        box-sizing: border-box;
+                    }
+                    .card-body p {
+                        font-size: 14pt;
+                        line-height: 1.6;
+                    }
+                </style>
+            </head>
+            <body>
+                ${printContents}
+            </body>
+            </html>
+        `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        });
+        });
+
+    </script>
+}

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Velzon.Controllers
+namespace Nezam.System.Web.Controllers
 {
     public class AuthenticationController : Controller
     {

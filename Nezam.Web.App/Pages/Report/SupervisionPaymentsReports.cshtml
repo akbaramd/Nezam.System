@@ -1,0 +1,91 @@
+﻿@page
+@model SupervisionPaymentsReports
+@{
+    ViewBag.ptitle = "گزارشات مالی";
+    ViewBag.pagetitle = "گزارش صورت حساب پرونده ها";
+}
+
+@section styles{
+    <!-- Sweet Alert css-->
+    <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+}
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">فیلتر گزارش</h4>
+            </div>
+            <div class="card-body">
+                <form id="reportForm" method="post">
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.CitySyncCode" class="form-label">کد همسان‌سازی شهر</label>
+                        <select asp-for="FilterModel.CitySyncCode" class="form-control" asp-items="Model.Cities"></select>
+                        <span asp-validation-for="FilterModel.CitySyncCode" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">ساخت گزارش (Excel)</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div id="reportContent">
+            <div class="card">
+                <div class="card-body">
+                    @if (Model.FilteredData != null && Model.FilteredData.Any())
+                    {
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>شماره پروانه</th>
+                                <th>نام شهر</th>
+                                <th>شماره پرونده</th>
+                                <th>شماره سریال</th>
+                                <th>نام</th>
+                                <th>فامیلی</th>
+                                <th>رشته</th>
+                                <th>کد عضویت</th>
+                                <th>کد رسمی</th>
+                                <th>مبلغ</th>
+                                <th>مبلغ باقی‌مانده</th>
+                                <th>تاریخ پرداخت</th>
+                                <th>مقداذ باقیمانده</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in Model.FilteredData)
+                            {
+                                <tr>
+                                    <td>@item.ConstructionLicenseId</td>
+                                    <td>@item.CityName</td>
+                                    <td>@item.DossierNumber</td>
+                                    <td>@item.DossierSerial</td>
+                                    <td>@item.FirstName</td>
+                                    <td>@item.LastName</td>
+                                    <td>@item.Field</td>
+                                    <td>@item.MembershipCode</td>
+                                    <td>@item.FormalCode</td>
+                                    <td>@item.Payment1Amount</td>
+                                    <td>@item.Payment1Remaining</td>
+                                    <td>@item.Payment1Status</td>
+                                    <td>@item.FinalRemainingAmount</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>لطفاً فیلترهای گزارش را مشخص کنید و بر روی "نمایش گزارش" کلیک کنید.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- App js -->
+    <script src="/assets/js/app.js"></script>
+}

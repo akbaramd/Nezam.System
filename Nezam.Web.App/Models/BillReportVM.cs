@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Velzon.Models
+namespace Nezam.System.Web.Models
 {
   public class BillReportVm
   {

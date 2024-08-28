@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace Velzon.Models;
+namespace Nezam.System.Web.Models;
 
 public class ReportFilterViewModel
 {

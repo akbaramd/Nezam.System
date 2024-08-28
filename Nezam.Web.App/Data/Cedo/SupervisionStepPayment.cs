@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Velzon.Data.Cedo;
+namespace Nezam.System.Web.Data.Cedo;
 
 public partial class SupervisionStepPayment
 {
@@ -13,7 +13,7 @@ public partial class SupervisionStepPayment
 
     public DateTime RegDate { get; set; }
 
-    public DateTime? PayDate { get; set; }
+    public DateTime PayDate { get; set; }
 
     public long Amount { get; set; }
 

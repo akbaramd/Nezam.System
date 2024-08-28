@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Velzon.Data.Models;
+using Nezam.System.Web.Data.Models;
 
-namespace Velzon.ViewComponents
+namespace Nezam.System.Web.ViewComponents
 {
   public class UserProfile : ViewComponent
   {

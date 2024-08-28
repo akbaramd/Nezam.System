@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Velzon.Models;
+namespace Nezam.System.Web.Models;
 
 public class ProfileSettingsViewModel
 {

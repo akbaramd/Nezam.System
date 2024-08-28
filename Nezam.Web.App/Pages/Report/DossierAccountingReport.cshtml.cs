@@ -1,330 +1,266 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CedoLib.Report;
+using FastReport.Export.Html;
 using FastReport.Export.PdfSimple;
 using FastReport.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Velzon.Data.Cedo;
-using Velzon.Models;
+using Nezam.System.Web.Data;
+using Nezam.System.Web.Data.Cedo;
+using Nezam.System.Web.Models;
+using Velzon;
 
-namespace Velzon.Pages.Report
+namespace Nezam.System.Web.Pages.Report;
+
+[Authorize(Policy = "DossierAccountingReport")]
+public class DossierAccountingReport : PageModel
 {
-  [Authorize]
-  public class DossierAccountingReport(IServiceProvider provider) : PageModel
-  {
-    private readonly IServiceProvider _provider = provider;
+    private readonly IServiceProvider _provider;
 
-    [BindProperty] public DossierAccountingFilterModel FilterModel { get; set; } = default!;
+    public DossierAccountingReport(IServiceProvider provider)
+    {
+        _provider = provider;
+    }
+
+    [BindProperty] public DossierAccountingFilterModel FilterModel { get; set; } = new DossierAccountingFilterModel();
 
     public WebReport? WebReport { get; set; }
-    public string ErrorMessage { get; set; } = string.Empty; // Property to hold the error message
+    public string ErrorMessage { get; set; } = string.Empty;
 
-    public void OnGet() { }
-
-    public async Task<IActionResult> OnPostGenerateReport()
+    public void OnGet()
     {
-      try
-      {
-        await SetupWebReportAsync();
-      }
-      catch (Exception ex)
-      {
-        ErrorMessage = "خطا در تولید گزارش: " + ex.Message; // Set the error message in Persian
-        WebReport = null; // Ensure the report is not loaded
-      }
-
-      return Page();
+      
     }
 
-    public async Task<IActionResult> OnPostDownloadPdf()
+    public async Task<JsonResult> OnPostAsync()
     {
-      try
-      {
-        await SetupWebReportAsync();
+        try
+        {
+            var reportVm = await GetReportDataAsync(FilterModel.DossierNumber);
 
-        using var pdfStream = new MemoryStream();
-        var pdfExport = new PDFSimpleExport();
-        WebReport?.Report.Export(pdfExport, pdfStream);
-        pdfStream.Position = 0;
+            if (reportVm == null)
+            {
+                throw new Exception("پرونده با این شماره یافت نشد.");
+            }
 
-        return File(pdfStream.ToArray(), "application/pdf", $"{FilterModel.DossierNumber}_{Guid.NewGuid()}.pdf");
-      }
-      catch (Exception ex)
-      {
-        ErrorMessage = "خطا در تولید گزارش PDF: " + ex.Message; // Set the error message in Persian
-        WebReport = null; // Ensure the report is not loaded
-        return Page();
-      }
+            await SetupWebReportAsync(reportVm);
+            return new JsonResult(new { success = true, reportHtml = await RenderReportAsync() });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new { success = false, errorMessage = "خطا در تولید گزارش: " + ex.Message });
+        }
     }
 
-    private async Task SetupWebReportAsync()
+    public async Task<IActionResult> OnPostDownloadPdf(string dossierNumber)
     {
-      var reportVm = await GetReportDataAsync();
+        try
+        {
+            var reportVm = await GetReportDataAsync(dossierNumber);
 
-      if (reportVm == null)
-      {
-        throw new Exception("مجوز ساخت یافت نشد.");
-      }
+            if (reportVm == null)
+            {
+                throw new Exception("پرونده با این شماره یافت نشد.");
+            }
 
-      WebReport = new WebReport();
-      WebReport.Report.Load(Path.Combine(Directory.GetCurrentDirectory(), "Reports", "Untitled4.frx"));
+            await SetupWebReportAsync(reportVm);
 
-      RegisterDataSources(WebReport.Report, reportVm);
-      SetReportParameters(WebReport.Report, reportVm);
-      WebReport.Report.Prepare();
+            using var pdfStream = new MemoryStream();
+            var pdfExport = new PDFSimpleExport();
+            WebReport?.Report.Export(pdfExport, pdfStream);
+            pdfStream.Position = 0;
+
+            return File(pdfStream.ToArray(), "application/pdf", $"{reportVm.DossierNumber}_{Guid.NewGuid()}.pdf");
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new { success = false, errorMessage = "خطا در تولید گزارش PDF: " + ex.Message });
+        }
     }
 
-    private async Task<BillReportVm> GetReportDataAsync()
+    private Task SetupWebReportAsync(BillReportVm reportVm)
     {
-      var ds = _provider.GetRequiredService<CedoContext>();
-      var cl = ds.ConstructionLicenses.FirstOrDefault(x =>
-        x.DossierNumber != null && x.DossierNumber.Equals(FilterModel.DossierNumber));
+        WebReport = new WebReport();
+        WebReport.Report.Load(Path.Combine(Directory.GetCurrentDirectory(), "Reports", "DossierAccountingReport.frx"));
 
-      if (cl == null)
-      {
-        throw new Exception("پرونده با این شماره یافت نشد.");
-      }
+        RegisterDataSources(WebReport.Report, reportVm);
+        SetReportParameters(WebReport.Report, reportVm);
+        WebReport.Report.Prepare();
+        return Task.CompletedTask;
+    }
 
-      return await BillReportHelper.GetDossierInitialBillReportDataAsync(_provider, cl.Id);
+    private async Task<BillReportVm> GetReportDataAsync(string dossierNumber)
+    {
+        var ds = _provider.GetRequiredService<CedoContext>();
+        var cl = ds.ConstructionLicenses.FirstOrDefault(x => x.DossierNumber != null && x.DossierNumber.Equals(dossierNumber));
+
+        if (cl == null)
+        {
+            throw new Exception("پرونده با این شماره یافت نشد.");
+        }
+
+        return await BillReportHelper.GetDossierInitialBillReportDataAsync(_provider, cl.Id);
     }
 
     private void RegisterDataSources(FastReport.Report report, BillReportVm reportVm)
     {
-      report.RegisterData(FetchTblChangeData(reportVm).ToDataTable(), "tbl_change");
-      report.RegisterData((reportVm.IntialBillDetails ?? new List<BillDetailReportVM>()).ToList().ToDataTable(),
-        "IntialBillDetails");
-      report.RegisterData((reportVm.SupervisorBillDetails ?? new List<BillDetailReportVM>()).ToList().ToDataTable(),
-        "SupervisorBillDetails");
-      report.RegisterData((reportVm.OtherBillDetails ?? new List<BillDetailReportVM>()).ToList().ToDataTable(),
-        "OtherBillDetails");
-      report.RegisterData((reportVm.BillPaymentDetails ?? new List<BillPaymentReportVM>()).ToList().ToDataTable(),
-        "BillPaymentDetails");
+        report.RegisterData(FetchTblChangeData(reportVm).ToDataTable(), "tbl_change");
+        report.RegisterData((reportVm.IntialBillDetails ?? new List<BillDetailReportVM>()).ToList().ToDataTable(), "IntialBillDetails");
+        report.RegisterData((reportVm.SupervisorBillDetails ?? new List<BillDetailReportVM>()).ToList().ToDataTable(), "SupervisorBillDetails");
+        report.RegisterData((reportVm.OtherBillDetails ?? new List<BillDetailReportVM>()).ToList().ToDataTable(), "OtherBillDetails");
+        report.RegisterData((reportVm.BillPaymentDetails ?? new List<BillPaymentReportVM>()).ToList().ToDataTable(), "BillPaymentDetails");
     }
 
     private void SetReportParameters(FastReport.Report report, BillReportVm reportVm)
     {
-      var reportParameters = FetchParameters(reportVm);
-
-      foreach (var prop in reportParameters.GetType().GetProperties())
-      {
-        report.SetParameterValue(prop.Name, prop.GetValue(reportParameters));
-      }
+        var reportParameters = FetchParameters(reportVm);
+        foreach (var prop in reportParameters.GetType().GetProperties())
+        {
+            report.SetParameterValue(prop.Name, prop.GetValue(reportParameters));
+        }
     }
-
-  private ReportParameters FetchParameters(BillReportVm reportVm)
-{
-    // Calculate sums with fallbacks to 0 if collections are null
-    long sumIntialBillDetails = reportVm.IntialBillDetails?.Sum(x => x.Amount + x.Tax) ?? 0;
-    long sumOtherBillDetails = reportVm.OtherBillDetails?.Sum(x => x.Amount + x.Tax) ?? 0;
-    long sumSupervisorBillDetails = reportVm.SupervisorBillDetails?.Sum(x => x.Amount + x.Tax) ?? 0;
-
-    // Total sum of all bills
-    long totalSumBills = sumIntialBillDetails + sumOtherBillDetails + sumSupervisorBillDetails;
-
-    // Format the total sum to a string with commas as thousand separators
-    string formattedSumBills = totalSumBills.ToString("##,###");
-
-    // Fallback to an empty string if the formatted sum is empty or invalid
-    string sumBills = !string.IsNullOrEmpty(formattedSumBills) ? formattedSumBills : string.Empty;
-
-    // Calculate the sum of bill payments
-    long sumBillPaymentDetails = reportVm.BillPaymentDetails?.Sum(x => x.Amount) ?? 0;
-    string formattedSumBillPayments = sumBillPaymentDetails.ToString("##,###");
-
-    // Determine the comment based on comparison
-    string comment = string.Empty;
-
-    if (totalSumBills > 0 && sumBillPaymentDetails > 0)
-    {
-      if (totalSumBills == sumBillPaymentDetails)
-      {
-        comment = $"مالک {reportVm.OwnerName} برای پرونده {reportVm.DossierNumber} هیچ‌گونه بدهی یا بستانکاری ندارد و صورتحساب‌ها و واریزی‌ها برابر می‌باشند.";
-      }
-      else if (totalSumBills > sumBillPaymentDetails)
-      {
-        long debtAmount = totalSumBills - sumBillPaymentDetails;
-        string formattedDebtAmount = debtAmount.ToString("##,###");
-        comment = $"مالک {reportVm.OwnerName} برای پرونده {reportVm.DossierNumber} دارای بدهی به مبلغ {formattedDebtAmount} ریال می‌باشد.";
-      }
-      else
-      {
-        long creditAmount = sumBillPaymentDetails - totalSumBills;
-        string formattedCreditAmount = creditAmount.ToString("##,###");
-        comment = $"مالک {reportVm.OwnerName} برای پرونده {reportVm.DossierNumber} دارای بستانکاری به مبلغ {formattedCreditAmount} ریال می‌باشد.";
-      }
-    }
-
-    return new ReportParameters
-    {
-        dossierNumber = reportVm.DossierNumber ?? string.Empty,
-        malek_mellicode = reportVm.OwnerNationalCode ?? string.Empty,
-        malek_address = reportVm.Address ?? string.Empty,
-        malek_mob_no = reportVm.OwnerMobile ?? string.Empty,
-        malek_phone_no = reportVm.OwnerPhone ?? string.Empty,
-        shahrdari_name = reportVm.MunicipalityName ?? string.Empty,
-        tedad_sagf = reportVm.FloorCount ?? string.Empty,
-        tedad_tabage = reportVm.FloorCount ?? string.Empty,
-
-        // Calculate individual sums with fallbacks
-        SumIntialBillDetails = sumIntialBillDetails.ToString("##,###"),
-        SumSupervisorBillDetails = sumSupervisorBillDetails.ToString("##,###"),
-        OtherBillDetails = sumOtherBillDetails.ToString("##,###"),
-
-        // Total sum of all bills
-        SumBills = sumBills,
-
-        // Sum of bill payments
-        SumBillPaymentDetails = formattedSumBillPayments,
-
-        // Comment based on comparison
-        comments = comment
-    };
-}
-
-
 
     private List<TblChangeModel> FetchTblChangeData(BillReportVm reportVm)
     {
-      return new List<TblChangeModel>
-      {
-        new()
+        return new List<TblChangeModel>
         {
-          sabt_date = reportVm.PersianRegDate ?? string.Empty,
-          sabt_no = reportVm.DossierSerial ?? string.Empty,
-          change = reportVm.DossierType,
-          metraj = Convert.ToDouble(reportVm.Metraje),
-          gorooh = reportVm.BuildingGroup ?? string.Empty,
-          malek_full_name = reportVm.OwnerName,
-          dastoor_date = reportVm.PersianRegDate ?? string.Empty,
-          dastoor_no = reportVm.LicenseNumber
-        }
-      };
+            new()
+            {
+                sabt_date = reportVm.PersianRegDate ?? string.Empty,
+                sabt_no = reportVm.DossierSerial ?? string.Empty,
+                change = reportVm.DossierType,
+                metraj = Convert.ToDouble(reportVm.Metraje),
+                gorooh = reportVm.BuildingGroup ?? string.Empty,
+                malek_full_name = reportVm.OwnerName,
+                dastoor_date = reportVm.PersianRegDate ?? string.Empty,
+                dastoor_no = reportVm.LicenseNumber
+            }
+        };
     }
-  }
-}
 
-public class TblChangeModel
-{
-  public string sabt_no { get; set; } = string.Empty;
-  public long ozviyat_no { get; set; }
-  public int gorooh_cod { get; set; }
-  public double tedad_cod { get; set; }
-  public string name { get; set; } = string.Empty;
-  public string fname { get; set; } = string.Empty;
-  public string title { get; set; } = string.Empty;
-  public double nezarat { get; set; }
-  public double tarrahi { get; set; }
-  public string daftar_fanni_no { get; set; } = string.Empty;
-  public int tafavot_metraj { get; set; }
-  public int sal { get; set; }
-  public string sabt_date { get; set; } = string.Empty;
-  public string malekname { get; set; } = string.Empty;
-  public string malekfname { get; set; } = string.Empty;
-  public string dastoor_no { get; set; } = string.Empty;
-  public string dastoor_date { get; set; } = string.Empty;
-  public string pelak_no { get; set; } = string.Empty;
-  public double metraj { get; set; }
-  public string daftar_no { get; set; } = string.Empty;
-  public string mantageh { get; set; } = string.Empty;
-  public string gorooh { get; set; } = string.Empty;
-  public string change { get; set; } = string.Empty;
-  public int metraj_gabl { get; set; }
-  public int sal1 { get; set; }
-  public int Expr1 { get; set; }
-  public string comment { get; set; } = string.Empty;
-  public double n_tedad { get; set; }
-  public double tkoll { get; set; }
-  public double t_tedad { get; set; }
-  public string eng_full_name { get; set; } = string.Empty;
-  public string eng_mob { get; set; } = string.Empty;
-  public string malek_full_name { get; set; } = string.Empty;
-  public int pnezarat_cod { get; set; }
-  public int ptarrahi_cod { get; set; }
-}
+    private async Task<string> RenderReportAsync()
+    {
+        using var memoryStream = new MemoryStream();
+        WebReport?.Report.Export(new HTMLExport(), memoryStream);
+        memoryStream.Position = 0;
+        using var reader = new StreamReader(memoryStream);
+        return await reader.ReadToEndAsync();
+    }
 
+    private ReportParameters FetchParameters(BillReportVm reportVm)
+    {
+        long sumIntialBillDetails = reportVm.IntialBillDetails?.Sum(x => x.Amount + x.Tax) ?? 0;
+        long sumOtherBillDetails = reportVm.OtherBillDetails?.Sum(x => x.Amount + x.Tax) ?? 0;
+        long sumSupervisorBillDetails = reportVm.SupervisorBillDetails?.Sum(x => x.Amount + x.Tax) ?? 0;
 
-public class Dtbl1Model
-{
-  public byte[] ArmSazman { get; set; } = default!;
-}
+        long totalSumBills = sumIntialBillDetails + sumOtherBillDetails + sumSupervisorBillDetails;
+        string formattedSumBills = totalSumBills.ToString("##,###");
+        string sumBills = !string.IsNullOrEmpty(formattedSumBills) ? formattedSumBills : string.Empty;
 
-public class ReportParameters
-{
-  public string maliat_rate { get; set; } = string.Empty;
-  public string karbar_name { get; set; } = string.Empty;
-  public string comments { get; set; } = string.Empty;
-  public string sahm_nezarat { get; set; } = string.Empty;
-  public string sahm_tarrahi { get; set; } = string.Empty;
-  public string sahm_mojri { get; set; } = string.Empty;
-  public string sahm_mechanic_khak { get; set; } = string.Empty;
-  public string sum_sahm_1 { get; set; } = string.Empty;
-  public string sahm_shanasname { get; set; } = string.Empty;
-  public string sahm_nezarat_eng { get; set; } = string.Empty;
-  public string sahm_nagshebardar { get; set; } = string.Empty;
-  public string sum_sahm_2 { get; set; } = string.Empty;
-  public string maliat_afzoodeh_shenasname { get; set; } = string.Empty;
-  public string sum_maliyat_afzoodeh { get; set; } = string.Empty;
-  public string tedad_tabage { get; set; } = string.Empty;
-  public string tedad_sagf { get; set; } = string.Empty;
-  public string trackcode { get; set; } = string.Empty;
-  public string maliat_afzoodeh_sahm_nezarat { get; set; } = string.Empty;
-  public string maliat_afzoodeh_sahm_tarrahi { get; set; } = string.Empty;
-  public string maliat_afzoodeh_sahm_mojri { get; set; } = string.Empty;
-  public string pardakht_saderat { get; set; } = string.Empty;
-  public string pardakht_tejarat { get; set; } = string.Empty;
-  public string bedehi_saderat { get; set; } = string.Empty;
-  public string bedehi_tejarat { get; set; } = string.Empty;
-  public string kol_saderat { get; set; } = string.Empty;
-  public string kol_tejarat { get; set; } = string.Empty;
-  public string sumCol1 { get; set; } = string.Empty;
-  public string sumCol2 { get; set; } = string.Empty;
-  public string malek_mob_no { get; set; } = string.Empty;
-  public string malek_phone_no { get; set; } = string.Empty;
-  public string malek_address { get; set; } = string.Empty;
-  public string malek_mellicode { get; set; } = string.Empty;
-  public string maliat_arzesh_rate { get; set; } = string.Empty;
-  public string avarez_arzesh_rate { get; set; } = string.Empty;
-  public string avarez_afzoodeh_shenasname { get; set; } = string.Empty;
-  public string avarez_afzoodeh_sahm_nezarat { get; set; } = string.Empty;
-  public string avarez_afzoodeh_sahm_tarrahi { get; set; } = string.Empty;
-  public string avarez_afzoodeh_sahm_mojri { get; set; } = string.Empty;
-  public string sahm_sandog_hemayati { get; set; } = string.Empty;
-  public string shahrdari_name { get; set; } = string.Empty;
-  public string bank_sazman { get; set; } = string.Empty;
-  public string bank_erjaa { get; set; } = string.Empty;
-  public string varizi_bank_sazman { get; set; } = string.Empty;
-  public string varizi_bank_erjaa { get; set; } = string.Empty;
-  public string bank_sazman_motamarkez { get; set; } = string.Empty;
-  public string sum_sahm_daftar { get; set; } = string.Empty;
-  public string varizi_bank_sazman_ostan { get; set; } = string.Empty;
-  public string kol_tejarat_ostan { get; set; } = string.Empty;
-  public string bedehi_tejarat_ostan { get; set; } = string.Empty;
-  public string pardakht_tejarat_ostan { get; set; } = string.Empty;
-  public string Dprint { get; set; } = string.Empty;
-  public string avarez_afzoodeh_nagshebardar { get; set; } = string.Empty;
-  public string sahm_nagshebardar_sazman { get; set; } = string.Empty;
-  public string maliat_afzoodeh_nagshebardar { get; set; } = string.Empty;
-  public string Sum_maliyat { get; set; } = string.Empty;
-  public string Sum_avarez { get; set; } = string.Empty;
-  public string sum_mablag_taaviz_naghshe { get; set; } = string.Empty;
-  public string maliat_sum_mablag_taaviz_naghshe { get; set; } = string.Empty;
-  public string avarez_sum_mablag_taaviz_naghshe { get; set; } = string.Empty;
-  public string sahm_Geo_nazer { get; set; } = string.Empty;
-  public string maliat_mechanic_khak { get; set; } = string.Empty;
-  public string avarez_mechanic_khak { get; set; } = string.Empty;
-  public string dossierNumber { get; set; } = string.Empty;
-  public string sum_khak { get; set; } = string.Empty;
-  public string controlTarrahLabel { get; set; } = string.Empty;
-  public String SumIntialBillDetails { get; set; } = string.Empty;
-  public String SumSupervisorBillDetails { get; set; } = string.Empty;
-  public String SumBillPaymentDetails { get; set; } = string.Empty;
-  public String SumBills { get; set; } = string.Empty;
-  public String OtherBillDetails { get; set; } = string.Empty;
+        long sumBillPaymentDetails = reportVm.BillPaymentDetails?.Sum(x => x.Amount) ?? 0;
+        string formattedSumBillPayments = sumBillPaymentDetails.ToString("##,###");
+
+        string comment = string.Empty;
+        if (totalSumBills > 0 && sumBillPaymentDetails > 0)
+        {
+            if (totalSumBills == sumBillPaymentDetails)
+            {
+                comment = $"مالک {reportVm.OwnerName} برای پرونده {reportVm.DossierNumber} هیچ‌گونه بدهی یا بستانکاری ندارد و صورتحساب‌ها و واریزی‌ها برابر می‌باشند.";
+            }
+            else if (totalSumBills > sumBillPaymentDetails)
+            {
+                long debtAmount = totalSumBills - sumBillPaymentDetails;
+                string formattedDebtAmount = debtAmount.ToString("##,###");
+                comment = $"مالک {reportVm.OwnerName} برای پرونده {reportVm.DossierNumber} دارای بدهی به مبلغ {formattedDebtAmount} ریال می‌باشد.";
+            }
+            else
+            {
+                long creditAmount = sumBillPaymentDetails - totalSumBills;
+                string formattedCreditAmount = creditAmount.ToString("##,###");
+                comment = $"مالک {reportVm.OwnerName} برای پرونده {reportVm.DossierNumber} دارای بستانکاری به مبلغ {formattedCreditAmount} ریال می‌باشد.";
+            }
+        }
+
+        return new ReportParameters
+        {
+            dossierNumber = reportVm.DossierNumber ?? string.Empty,
+            malek_mellicode = reportVm.OwnerNationalCode ?? string.Empty,
+            malek_address = reportVm.Address ?? string.Empty,
+            malek_mob_no = reportVm.OwnerMobile ?? string.Empty,
+            malek_phone_no = reportVm.OwnerPhone ?? string.Empty,
+            shahrdari_name = reportVm.MunicipalityName ?? string.Empty,
+            tedad_sagf = reportVm.FloorCount ?? string.Empty,
+            tedad_tabage = reportVm.FloorCount ?? string.Empty,
+            SumIntialBillDetails = sumIntialBillDetails.ToString("##,###"),
+            SumSupervisorBillDetails = sumSupervisorBillDetails.ToString("##,###"),
+            OtherBillDetails = sumOtherBillDetails.ToString("##,###"),
+            SumBills = sumBills,
+            SumBillPaymentDetails = formattedSumBillPayments,
+            comments = comment
+        };
+    }
 }
 
 public class DossierAccountingFilterModel
 {
-  [Required(ErrorMessage = "شماره پرونده را وارد کنید")]
-  public string DossierNumber { get; set; } = default!;
+    [Required(ErrorMessage = "شماره پرونده را وارد کنید")]
+    public string DossierNumber { get; set; } = default!;
+}
+
+public class TblChangeModel
+{
+    public string sabt_no { get; set; } = string.Empty;
+    public long ozviyat_no { get; set; }
+    public int gorooh_cod { get; set; }
+    public double tedad_cod { get; set; }
+    public string name { get; set; } = string.Empty;
+    public string fname { get; set; } = string.Empty;
+    public string title { get; set; } = string.Empty;
+    public double nezarat { get; set; }
+    public double tarrahi { get; set; }
+    public string daftar_fanni_no { get; set; } = string.Empty;
+    public int tafavot_metraj { get; set; }
+    public int sal { get; set; }
+    public string sabt_date { get; set; } = string.Empty;
+    public string malekname { get; set; } = string.Empty;
+    public string malekfname { get; set; } = string.Empty;
+    public string dastoor_no { get; set; } = string.Empty;
+    public string dastoor_date { get; set; } = string.Empty;
+    public string pelak_no { get; set; } = string.Empty;
+    public double metraj { get; set; }
+    public string daftar_no { get; set; } = string.Empty;
+    public string mantageh { get; set; } = string.Empty;
+    public string gorooh { get; set; } = string.Empty;
+    public string change { get; set; } = string.Empty;
+    public int metraj_gabl { get; set; }
+    public int sal1 { get; set; }
+    public int Expr1 { get; set; }
+    public string comment { get; set; } = string.Empty;
+    public double n_tedad { get; set; }
+    public double tkoll { get; set; }
+    public double t_tedad { get; set; }
+    public string eng_full_name { get; set; } = string.Empty;
+    public string eng_mob { get; set; } = string.Empty;
+    public string malek_full_name { get; set; } = string.Empty;
+    public int pnezarat_cod { get; set; }
+    public int ptarrahi_cod { get; set; }
+}
+
+public class ReportParameters
+{
+    public string dossierNumber { get; set; } = string.Empty;
+    public string malek_mellicode { get; set; } = string.Empty;
+    public string malek_address { get; set; } = string.Empty;
+    public string malek_mob_no { get; set; } = string.Empty;
+    public string malek_phone_no { get; set; } = string.Empty;
+    public string shahrdari_name { get; set; } = string.Empty;
+    public string tedad_sagf { get; set; } = string.Empty;
+    public string tedad_tabage { get; set; } = string.Empty;
+    public string SumIntialBillDetails { get; set; } = string.Empty;
+    public string SumSupervisorBillDetails { get; set; } = string.Empty;
+    public string OtherBillDetails { get; set; } = string.Empty;
+    public string SumBills { get; set; } = string.Empty;
+    public string SumBillPaymentDetails { get; set; } = string.Empty;
+    public string comments { get; set; } = string.Empty;
 }

@@ -1,0 +1,10 @@
+﻿<div class="mt-3">
+    @foreach (var claim in Model.AvailableClaims)
+    {
+        <div class="form-check mb-2">
+            <input type="checkbox" name="SelectedClaims" value="@claim.Value"
+                   class="form-check-input" @(Model.SelectedClaims.Contains(claim.Value) ? "checked" : "")/>
+            <label class="form-check-label">@claim.Title</label>
+        </div>
+    }
+</div>

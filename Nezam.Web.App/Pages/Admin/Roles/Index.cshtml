@@ -1,0 +1,194 @@
+﻿@page
+@using Microsoft.AspNetCore.Antiforgery
+@model IndexModel
+@inject IAntiforgery Antiforgery
+@{
+    ViewBag.ptitle = "مدیریت نقش‌ها";
+    ViewBag.pagetitle = "لیست نقش‌ها";
+}
+
+@section styles{
+    <!-- Sweet Alert css-->
+    <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <a class="btn btn-primary" asp-page="/Admin/Roles/Create">افزودن نقش جدید</a>
+    </div>
+
+    <!-- Search Form -->
+    <div class="col-md-12 mb-3">
+        <form method="get" class="input-group">
+            <input type="text" name="SearchQuery" value="@Model.SearchQuery" class="form-control" placeholder="جستجوی نقش‌ها..."/>
+            <button class="btn btn-primary" type="submit">جستجو</button>
+        </form>
+    </div>
+
+    <!-- Role Table Section -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">لیست نقش‌ها</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped mb-3">
+                    <thead>
+                    <tr>
+                        <th>نام نقش</th>
+                        <th>تعداد دسترسی‌ها</th>
+                        <th>عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.Roles.Any())
+                    {
+                        @foreach (var role in Model.Roles)
+                        {
+                            <tr id="role-row-@role.Id">
+                                <td>@role.Name</td>
+                                <td>@role.Claims.Count</td>
+                                <td>
+                                    <a asp-page="Edit" asp-route-id="@role.Id" class="btn btn-sm btn-primary">ویرایش</a>
+                                    <button type="button" class="btn btn-sm btn-danger delete-role-btn" data-role-id="@role.Id">حذف</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center">هیچ نقشی یافت نشد.</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @for (var i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-page="./Index"
+                                   asp-route-CurrentPage="@i"
+                                   asp-route-SearchQuery="@Model.SearchQuery">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts {
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+    <!-- SweetAlert2 js -->
+    <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+    <script>
+    class RoleManagement {
+        constructor() {
+            this.init();
+        }
+
+        init() {
+            // Bind event handlers
+            this.bindDeleteRoleButtons();
+        }
+
+        bindDeleteRoleButtons() {
+            const deleteButtons = document.querySelectorAll('.delete-role-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', (event) => this.handleDeleteButtonClick(event));
+            });
+        }
+
+        handleDeleteButtonClick(event) {
+            const button = event.currentTarget;
+            const roleId = button.getAttribute('data-role-id');
+            const row = document.getElementById(`role-row-${roleId}`);
+
+            // SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'آیا مطمئن هستید؟',
+                text: "این عملیات قابل بازگشت نیست!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله، حذف شود!',
+                cancelButtonText: 'لغو'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.deleteRole(roleId, row);
+                }
+            });
+        }
+
+        deleteRole(roleId, row) {
+            $.ajax({
+                url: this.getDeleteUrl(),
+                type: 'POST',
+                data: {
+                    id: roleId,
+                    __RequestVerificationToken: this.getCsrfToken()
+                },
+                beforeSend: (xhr) => {
+                    xhr.setRequestHeader("XSRF-TOKEN", this.getCsrfToken());
+                },
+                success: (response) => this.handleDeleteSuccess(response, row),
+                error: this.handleDeleteError
+            });
+        }
+
+        getDeleteUrl() {
+            return '@Url.Page("./Index", new { handler = "Delete" })';
+        }
+
+        getCsrfToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]').value;
+        }
+
+        handleDeleteSuccess(response, row) {
+            if (response.success) {
+                Swal.fire(
+                    'حذف شد!',
+                    response.message,
+                    'success'
+                ).then(() => {
+                    // Remove the deleted role's row from the table
+                    row.remove();
+                });
+            } else {
+                Swal.fire(
+                    'خطا!',
+                    response.message || 'خطایی رخ داده است.',
+                    'error'
+                );
+            }
+        }
+
+        handleDeleteError() {
+            Swal.fire(
+                'خطا!',
+                'خطایی در ارسال درخواست به وجود آمد.',
+                'error'
+            );
+        }
+        }
+
+    // Initialize the RoleManagement class when the document is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        new RoleManagement();
+    });
+
+</script>
+}

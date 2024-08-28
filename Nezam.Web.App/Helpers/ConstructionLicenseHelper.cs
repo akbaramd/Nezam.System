@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Velzon.Data.Cedo;
-using Velzon.Enums;
+using Nezam.System.Web.Data.Cedo;
+using Nezam.System.Web.Enums;
 
-namespace Velzon.Helpers;
+namespace Nezam.System.Web.Helpers;
 
 public class ConstructionLicenseHelper
 {

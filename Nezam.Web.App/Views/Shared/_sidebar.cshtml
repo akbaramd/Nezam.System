@@ -1,94 +1,105 @@
-﻿<!-- ========== App Menu ========== -->
+﻿@using Nezam.System.Web
+@using Nezam.System.Web.Data.Cedo // Ensure correct namespace
+@{
+// Instantiate MenuService with the current user's claims
+var menuService = new MenuService(User);
+var menuItems = menuService.GetMenu();
+
+}
+
+<!-- ========== App Menu ========== -->
 <div class="app-menu navbar-menu">
     <!-- LOGO -->
-    <div class="navbar-brand-box">
-        <!-- Dark Logo-->
-        <a href="@Url.Action("Index", "Dashboard")" class="logo logo-dark">
-            <span class="logo-sm">
-                <img src="~/assets/images/logo-sm.png" alt="" height="22">
-            </span>
-            <span class="logo-lg">
-                <img src="~/assets/images/logo-dark.png" alt="" height="17">
-            </span>
-        </a>
-        <!-- Light Logo-->
-        <a href="@Url.Action("Index", "Dashboard")" class="logo logo-light">
-            <span class="logo-sm">
-                <img src="~/assets/images/logo-sm.png" alt="" height="22">
-            </span>
-            <span class="logo-lg">
-                <img src="~/assets/images/logo-light.png" alt="" height="17">
-            </span>
-        </a>
-        <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
-            <i class="ri-record-circle-line"></i>
-        </button>
-    </div>
+    <!-- ... your existing code for the logo ... -->
 
     <div id="scrollbar">
         <div class="container-fluid">
-
-            <div id="two-column-menu">
-            </div>
+            <div id="two-column-menu"></div>
             <ul class="navbar-nav" id="navbar-nav">
-                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#finincialApps" data-bs-toggle="collapse"
-                       role="button" aria-expanded="false" aria-controls="finincialApps">
-                        <span >امور مالی و حسابداری</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="finincialApps">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="#dosseirAppsReports" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="dosseirAppsReports" >
-                                    گزارشات
-                                </a>
-                                <div class="collapse menu-dropdown" id="dosseirAppsReports">
-                                    <ul class="nav nav-sm flex-column">
-                                        <li class="nav-item">
-                                            <a asp-action="DossierAccountingReport" asp-controller="Report" class="nav-link" > گزارش صورتحساب پرونده </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="/apps/calendarmonthgrid" class="nav-link"> گزارش صورتحساب ناظرین</a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                            </li>
-                        </ul>
-                    </div>
+                <li class="menu-title">
+                    <span data-key="t-menu">Menu</span>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#dosseirApps" data-bs-toggle="collapse"
-                       role="button" aria-expanded="false" aria-controls="dosseirApps">
-                        <span >پرونده های ساختمانی</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="dosseirApps">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="#dosseirAppsReports" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="dosseirAppsReports" >
-                                    گزارشات
-                                </a>
-                                <div class="collapse menu-dropdown" id="dosseirAppsReports">
-                                    <ul class="nav nav-sm flex-column">
-                                        <li class="nav-item">
-                                            <a href="/apps/calendar" class="nav-link" > لیست پرونده های پرداخت نشده </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a asp-action="DossierWithoutExecuterReport" asp-controller="Report" class="nav-link">لیست پرونده های بدون مجری</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                @foreach (var menuItem in menuItems)
+                {
+                    // Generate a unique ID for each collapsible menu item
+                    var uniqueId = "menu-" + Guid.NewGuid().ToString("N");
 
-                            </li>
-                        
+                    @if (menuItem.Children.Any()) // Dropdown item with children
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#"
+                               data-bs-toggle="collapse"
+                               role="button"
+                               aria-expanded="false"
+                               aria-controls="@uniqueId">
+                                @if (!string.IsNullOrEmpty(menuItem.Icon))
+                                {
+                                    <i class="@menuItem.Icon"></i>
+                                }
+                                <span>@menuItem.Title</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="@uniqueId">
+                                <ul class="nav nav-sm flex-column">
+                                    @foreach (var child in menuItem.Children)
+                                    {
+                                        var childUniqueId = "submenu-" + Guid.NewGuid().ToString("N");
 
-                        </ul>
-                    </div>
-                </li>
+                                        @if (child.Children.Any()) // Nested dropdown
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#"
+                                                   data-bs-toggle="collapse"
+                                                   role="button"
+                                                   aria-expanded="false"
+                                                   aria-controls="@childUniqueId">
+                                                    @if (!string.IsNullOrEmpty(child.Icon))
+                                                    {
+                                                        <i class="@child.Icon"></i>
+                                                    }
+                                                    <span>@child.Title</span>
+                                                </a>
+                                                <div class="collapse menu-dropdown" id="@childUniqueId">
+                                                    <ul class="nav nav-sm flex-column">
+                                                        @foreach (var grandChild in child.Children)
+                                                        {
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" asp-page="@grandChild.Page">
+                                                                    @grandChild.Title
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        }
+                                        else // Simple link (no children)
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link" asp-page="@child.Page">
+                                                    @if (!string.IsNullOrEmpty(child.Icon))
+                                                    {
+                                                        <i class="@child.Icon"></i>
+                                                    }
+                                                    <span>@child.Title</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    else // Simple link (no children)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" asp-page="@menuItem.Page">
+                                @menuItem.Title
+                            </a>
+                        </li>
+                    }
+                }
             </ul>
         </div>
-        <!-- Sidebar -->
     </div>
     <div class="sidebar-background"></div>
 </div>

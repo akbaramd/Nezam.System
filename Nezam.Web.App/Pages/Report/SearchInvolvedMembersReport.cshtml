@@ -1,0 +1,197 @@
+﻿@page
+@model SearchInvolvedMembersReport
+@{
+ViewBag.Title = "جستجوی اعضای درگیر";
+}
+
+@section styles{
+<!-- Sweet Alert css-->
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+}
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">جستجو با شماره عضویت</h4>
+            </div>
+            <div class="card-body">
+                <form id="searchForm" method="post" data-ajax="true" data-ajax-method="post" data-ajax-begin="onSearchStart" data-ajax-success="onSearchCompleted" data-ajax-failure="onSearchFailed" data-ajax-complete="onSearchComplete">
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.MembershipCode" class="form-label">شماره عضویت</label>
+                        <input asp-for="FilterModel.MembershipCode" class="form-control" type="text" id="membershipCodeInput" />
+                        <span asp-validation-for="FilterModel.MembershipCode" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.QuotaYear" class="form-label">سال کاری</label>
+                        <input asp-for="FilterModel.QuotaYear" class="form-control" type="text" placeholder="سال کاری را وارد کنید" />
+                        <span asp-validation-for="FilterModel.QuotaYear" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.ServiceTypeId" class="form-label">نوع خدمت</label>
+                        <select asp-for="FilterModel.ServiceTypeId" asp-items="Model.ServiceTypes" class="form-control">
+                            <option value="">همه</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.ServiceFieldId" class="form-label">رشته خدمت</label>
+                        <select asp-for="FilterModel.ServiceFieldId" asp-items="Model.ServiceFields" class="form-control">
+                            <option value="">همه</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.InvolvedMemberStatusId" class="form-label">وضعیت عضو درگیر</label>
+                        <select asp-for="FilterModel.InvolvedMemberStatusId" asp-items="Model.InvolvedMemberStatuses" class="form-control">
+                            <option value="">همه</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.DossierTypeId" class="form-label">نوع پرونده</label>
+                        <select asp-for="FilterModel.DossierTypeId" asp-items="Model.DossierTypes" class="form-control">
+                            <option value="">همه</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">جستجو</button>
+                </form>
+
+                <div id="reportActions" class="d-flex mt-2 d-none gap-2">
+                    <form class="flex-grow-1" id="downloadPdfForm" method="post" asp-page-handler="DownloadPdf">
+                        <input type="hidden" name="membershipCode" id="membershipCodeHiddenInput"/>
+                        <button type="submit" class="btn btn-dark w-100">دانلود PDF</button>
+                    </form>
+                    <button type="button" class="flex-grow-1 btn btn-light" id="printButton">چاپ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div id="resultsContent">
+            <div class="card">
+                <div class="card-body">
+                    @if (ViewData["RenderedReport"] != null)
+                    {
+                        @Html.Raw(ViewData["RenderedReport"]??string.Empty)
+                    }
+                    else
+                    {
+                    <p>لطفاً شماره عضویت را وارد کرده و روی "جستجو" کلیک کنید تا نتایج را مشاهده نمایید.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<!-- App js -->
+<script src="/assets/js/app.js"></script>
+<!-- SweetAlert2 js -->
+<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<script>
+    function onSearchStart() {
+        Swal.fire({
+            title: 'در حال جستجو...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
+
+    function onSearchComplete() {
+        Swal.close();
+    }
+
+    function onSearchCompleted(response) {
+        if (response.success) {
+            $('#resultsContent').html(response.reportHtml);
+            $('#reportActions').removeClass('d-none');
+            $('#membershipCodeHiddenInput').val($('#membershipCodeInput').val()); // Set membership code in hidden input
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا!',
+                text: response.errorMessage
+            });
+        }
+    }
+
+    function onSearchFailed() {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطا!',
+            text: 'در حین جستجو خطایی رخ داده است.'
+        });
+    }
+
+    $(document).ready(function () {
+
+
+        // Check if the membership code input field is populated
+        const membershipCode = $('#membershipCodeInput').val();
+
+        if (membershipCode) {
+            // Automatically submit the form if the membership code is pre-filled
+            $('#searchForm').submit();
+        }
+    
+        $('#printButton').click(function () {
+            var printContents = document.getElementById('resultsContent').innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            // Create a temporary iframe for printing
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+            <html>
+            <head>
+                <title>Print Report</title>
+                <style>
+                    @@page {
+                        size: A4 landscape; /* Set the orientation to landscape */
+                        margin: 20mm;
+                    }
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        font-family: Arial, sans-serif;
+                    }
+                    .card {
+                        border: none;
+                        box-shadow: none;
+                        page-break-inside: avoid;
+                    }
+                    #resultsContent {
+                        margin: 0;
+                        padding: 0;
+                        width: 100%;
+                    }
+                    .card-body {
+                        padding: 0;
+                        margin: 0;
+                        width: 100%;
+                        box-sizing: border-box;
+                    }
+                    .card-body p {
+                        font-size: 14pt;
+                        line-height: 1.6;
+                    }
+                </style>
+            </head>
+            <body>
+                ${printContents}
+            </body>
+            </html>
+        `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        });
+    });
+</script>
+}

@@ -1,0 +1,82 @@
+﻿@page
+@model Nezam.System.Web.Pages.Memberships.IndexModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+ViewBag.ptitle = "مدیریت اعضا";
+ViewBag.pagetitle = "لیست اعضا";
+}
+
+@section styles{
+<!-- Sweet Alert css-->
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+}
+@Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <!-- Search Form -->
+        <form method="get" class="input-group">
+            <input type="text" name="SearchQuery" value="@Model.SearchQuery" class="form-control" placeholder="جستجوی عضو با کد عضویت، نام کاربری یا ایمیل..." />
+            <button class="btn btn-primary" type="submit">جستجو</button>
+        </form>
+    </div>
+    <!-- Member Table Section -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">لیست اعضا</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped mt-3">
+                    <thead>
+                    <tr>
+                        <th>شماره عضویت</th>
+                        <th>نام</th>
+                        <th>کد ملی</th>
+                        <th>عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.Members.Any())
+                    {
+                    @foreach (var member in Model.Members)
+                    {
+                    <tr>
+                        <td>@member.MembershipCode</td>
+                        <td>@member.User.UserProfile?.FirstName @member.User.UserProfile?.LastName</td>
+                        <td>@member.User.UserProfile?.NationalCode</td>
+                        <td>
+                            @if (User.HasClaim("SearchInvolvedMembersReport", "true"))
+                            {
+                                <a href="/Report/SearchInvolvedMembersReport?membershipCode=@member.MembershipCode" class="btn btn-sm btn-info">کارکرد</a>
+                            }
+                        </td>
+                    </tr>
+                    }
+                    }
+                    else
+                    {
+                    <tr>
+                        <td colspan="4" class="text-center">هیچ عضوی یافت نشد.</td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link"
+                               asp-page="./Index"
+                               asp-route-CurrentPage="@i"
+                               asp-route-SearchQuery="@Model.SearchQuery">@i</a>
+                        </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>

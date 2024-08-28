@@ -1,0 +1,107 @@
+﻿@page
+@model Nezam.System.Web.Pages.Admin.Users.EditModel
+@{
+ViewBag.ptitle = "مدیریت کاربران";
+ViewBag.pagetitle = "ویرایش کاربران";
+}
+@section styles{
+<!-- Sweet Alert css-->
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+}
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title mb-0">ویرایش کاربر</h4>
+    </div>
+    <div class="card-body">
+        <form id="editUserForm" method="post" data-ajax="true" data-ajax-method="post" data-ajax-success="onFormSuccess" data-ajax-failure="onFormFailure">
+            @* Display Validation Summary *@
+            @if (ViewData.ModelState.IsValid == false)
+            {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+            }
+
+            <ul class="nav nav-tabs mb-3" id="userTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">اطلاعات کاربر</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="roles-tab" data-bs-toggle="tab" href="#roles" role="tab" aria-controls="roles" aria-selected="false">مدیریت نقش‌ها</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="claims-tab" data-bs-toggle="tab" href="#claims" role="tab" aria-controls="claims" aria-selected="false">مدیریت دسترسی‌ها</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="userTabsContent">
+                <!-- User Information Tab -->
+                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                    <div class="mb-3">
+                        <label asp-for="UserModel.UserName" class="form-label">نام کاربری</label>
+                        <input asp-for="UserModel.UserName" class="form-control" />
+                        <span asp-validation-for="UserModel.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UserModel.Email" class="form-label">ایمیل</label>
+                        <input asp-for="UserModel.Email" class="form-control" />
+                        <span asp-validation-for="UserModel.Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Roles Management Tab -->
+                <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
+                    <div class="mb-3">
+                        <h4>مدیریت نقش‌ها</h4>
+                        @await Html.PartialAsync("_UserRolesPartial", Model)
+                    </div>
+                </div>
+
+                <!-- Claims Management Tab -->
+                <div class="tab-pane fade" id="claims" role="tabpanel" aria-labelledby="claims-tab">
+                    <div class="mb-3">
+                        <h4>مدیریت دسترسی‌ها</h4>
+                        @await Html.PartialAsync("_UserClaimsPartial", Model)
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">ذخیره</button>
+            <a asp-page="Index" class="btn btn-secondary">بازگشت</a>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+<!-- App js -->
+<script src="/assets/js/app.js"></script>
+<!-- SweetAlert2 js -->
+<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<!-- jQuery -->
+
+<script>
+    function onFormSuccess(response) {
+        if (response.success) {
+            // Show success message with SweetAlert2
+            Swal.fire({
+                title: 'ذخیره شد!',
+                text: 'اطلاعات کاربر با موفقیت ذخیره شد.',
+                icon: 'success',
+                confirmButtonText: 'باشه'
+            }).then(() => {
+                // Redirect to the index page after the success alert
+                window.location.href = '@Url.Page("Index")';
+            });
+        } else {
+            // Replace the form with the response (including validation errors)
+            $('#editUserForm').html(response);
+        }
+    }
+
+    function onFormFailure() {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطا!',
+            text: 'خطایی در ارسال درخواست به وجود آمد.'
+        });
+    }
+</script>
+}

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Velzon.Enums;
+namespace Nezam.System.Web.Enums;
 
 public enum FloorRegisterSteps
 {

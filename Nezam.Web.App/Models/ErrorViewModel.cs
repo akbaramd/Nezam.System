@@ -1,4 +1,4 @@
-﻿namespace Velzon.Models;
+﻿namespace Nezam.System.Web.Models;
 
 public class ErrorViewModel
 {

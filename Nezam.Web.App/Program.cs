@@ -1,22 +1,36 @@
+using System.Globalization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Velzon.Data;
-using Velzon.Data.Models;
+using Nezam.System.Web.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Velzon.Data.Cedo;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Nezam.System.Web;
+using Nezam.System.Web.Data.Models;
+using Nezam.System.Web.Data.Cedo;
+using Nezam.System.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+
 // Add Razor Pages support
 builder.Services.AddRazorPages();
+
 // Add DbContext with SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddDbContext<CedoContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("CedoConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CedoConnection")));
+
 // Add Identity services
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
 builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 {
     options.Password.RequireDigit = true;
@@ -36,7 +50,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Strict;
         options.Cookie.Name = "YourAuthCookie";
-        options.ExpireTimeSpan = TimeSpan.FromHours(1); // Adjust MaxAge equivalent in ExpireTimeSpan
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
         options.SlidingExpiration = true;
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
@@ -45,6 +59,26 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Add FastReport
 builder.Services.AddFastReport();
+// Register policies from attributes
+builder.Services.AddAuthorization(options =>
+{
+    options.RegisterPoliciesFromControllersAndPages();
+});
+
+// Configure the localization options
+var supportedCultures = new[] { "fa-IR" };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("fa-IR");
+    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.RequestCultureProviders =
+    [
+      new QueryStringRequestCultureProvider(),
+      new CookieRequestCultureProvider(),
+      new AcceptLanguageHeaderRequestCultureProvider()
+    ];
+});
 
 var app = builder.Build();
 
@@ -53,7 +87,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<User>>();
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+    RoleManager<IdentityRole<Guid>> roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     await SeedData.Initialize(userManager, roleManager);
 }
 
@@ -72,6 +106,9 @@ app.UseRouting();
 app.UseAuthentication(); // Add authentication middleware
 app.UseAuthorization();
 
+// Apply localization
+app.UseRequestLocalization();
+
 app.UseFastReport();
 app.MapRazorPages();
 
@@ -86,14 +123,36 @@ app.MapControllerRoute(
 
 app.Run();
 
-public static class SeedData
+
+public  class SeedData
 {
     public static async Task Initialize(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
     {
         // Ensure the "developer" role exists
+        IdentityRole<Guid>? developerRole = null;
         if (!await roleManager.RoleExistsAsync("developer"))
         {
-            await roleManager.CreateAsync(new IdentityRole<Guid>("developer"));
+            developerRole = new IdentityRole<Guid>("developer");
+            await roleManager.CreateAsync(developerRole);
+        }
+        else
+        {
+            developerRole = await roleManager.FindByNameAsync("developer");
+        }
+
+        // Extract all policies (permissions)
+        var policyNames = PolicyRegistrationHelper.ExtractPoliciesFromControllersAndPages();
+
+        // Add all policies as claims to the developer role
+        foreach (var policyName in policyNames)
+        {
+          if (developerRole != null)
+          {
+            if (!(await roleManager.GetClaimsAsync(developerRole)).Select(x=>x.Type).Contains(policyName))
+            {
+                await roleManager.AddClaimAsync(developerRole, new Claim(policyName, "true"));
+            }
+          }
         }
 
         // Check if the user already exists
@@ -113,13 +172,37 @@ public static class SeedData
 
             if (result.Succeeded)
             {
-                // Assign the "developer" role
+                // Assign the "developer" role to the user
                 await userManager.AddToRoleAsync(user, "developer");
+
+                // Add all policies as claims to the user
+                foreach (var policyName in policyNames)
+                {
+                    await userManager.AddClaimAsync(user, new Claim(policyName, "true"));
+                }
             }
             else
             {
                 // Handle the case where user creation failed
                 throw new Exception("Failed to create seed user.");
+            }
+        }
+        else
+        {
+            // Ensure the user has the developer role
+            if (!await userManager.IsInRoleAsync(user, "developer"))
+            {
+                await userManager.AddToRoleAsync(user, "developer");
+            }
+
+            // Ensure the user has all policy claims
+            foreach (var policyName in policyNames)
+            {
+                var hasClaim = (await userManager.GetClaimsAsync(user)).Any(c => c.Type == policyName);
+                if (!hasClaim)
+                {
+                    await userManager.AddClaimAsync(user, new Claim(policyName, "true"));
+                }
             }
         }
     }

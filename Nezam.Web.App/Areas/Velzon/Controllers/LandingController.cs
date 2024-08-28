@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Velzon.Controllers
+namespace Nezam.System.Web.Controllers
 {
     public class LandingController : Controller
     {

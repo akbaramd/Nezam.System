@@ -6,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Velzon.Data.Cedo;
-using Velzon.Enums;
-using Velzon.Helpers;
-using Velzon.Models;
+using Nezam.System.Web.Data.Cedo;
+using Nezam.System.Web.Enums;
+using Nezam.System.Web.Helpers;
+using Nezam.System.Web.Models;
 
 namespace CedoLib.Report
 {

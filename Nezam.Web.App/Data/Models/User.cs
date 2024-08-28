@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Velzon.Data.Models;
+namespace Nezam.System.Web.Data.Models;
 
 public class User : IdentityUser<Guid>
 {

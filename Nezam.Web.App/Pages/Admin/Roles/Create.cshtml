@@ -1,0 +1,104 @@
+﻿@page
+@model Nezam.System.Web.Pages.Admin.Roles.CreateModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+ViewBag.ptitle = "افزودن نقش جدید";
+}
+
+@section styles{
+<!-- Sweet Alert css-->
+<link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">افزودن نقش جدید</h4>
+            </div>
+            <div class="card-body">
+                <form id="createRoleForm" method="post" data-ajax="true" data-ajax-method="post" data-ajax-success="onFormSuccess" data-ajax-failure="onFormFailure">
+                    @if (ViewData.ModelState.IsValid == false)
+                    {
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    }
+
+                    <ul class="nav nav-tabs mb-3" id="roleTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">اطلاعات نقش</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="claims-tab" data-bs-toggle="tab" href="#claims" role="tab" aria-controls="claims" aria-selected="false">دسترسی‌ها</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="roleTabsContent">
+                        <!-- Information Tab -->
+                        <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                            <div class="mb-3">
+                                <label asp-for="RoleName" class="form-label">نام نقش</label>
+                                <input asp-for="RoleName" class="form-control" />
+                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Claims Tab -->
+                        <div class="tab-pane fade" id="claims" role="tabpanel" aria-labelledby="claims-tab">
+                            <div class="mb-3">
+                                <h4>دسترسی‌ها</h4>
+                                @foreach (var claim in Model.AvailableClaims)
+                                {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="@claim.Value" id="claim-@claim.Value" name="SelectedClaims" />
+                                    <label class="form-check-label" for="claim-@claim.Value">
+                                        @claim.Title
+                                    </label>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">افزودن نقش</button>
+                    <a asp-page="Index" class="btn btn-secondary">بازگشت</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<!-- App js -->
+<script src="~/assets/js/app.js"></script>
+<!-- SweetAlert2 js -->
+<script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<!-- jQuery -->
+
+<script>
+    function onFormSuccess(response) {
+        if (response.success) {
+            // Show success message with SweetAlert2
+            Swal.fire({
+                title: 'نقش اضافه شد!',
+                text: 'نقش جدید با موفقیت اضافه شد.',
+                icon: 'success',
+                confirmButtonText: 'باشه'
+            }).then(() => {
+                // Redirect to the index page after the success alert
+                window.location.href = '@Url.Page("Index")';
+            });
+        } else {
+            // Display validation errors or any other errors
+            $('#createRoleForm').html(response);
+        }
+    }
+
+    function onFormFailure() {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطا!',
+            text: 'خطایی در ارسال درخواست به وجود آمد.'
+        });
+    }
+</script>
+}

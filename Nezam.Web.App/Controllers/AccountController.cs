@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Velzon.Data.Models;
-using Velzon.Models;
+using Nezam.System.Web.Data.Models;
+using Nezam.System.Web.Models;
 
-namespace Velzon.Controllers
+namespace Nezam.System.Web.Controllers
 {
     public class AccountController : Controller
     {
