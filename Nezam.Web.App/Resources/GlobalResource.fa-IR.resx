@@ -30,4 +30,16 @@
   <data name="AdminAccess" xml:space="preserve">
     <value>دسترسی مدیریت</value>
   </data>
+  <data name="SupervisionPaymentsReports" xml:space="preserve">
+    <value>گزارش پرداخت ناظرین</value>
+  </data>
+  <data name="SearchInvolvedMembersReport" xml:space="preserve">
+    <value>گزارش کارکرد مهندسین</value>
+  </data>
+  <data name="ManageMemberships" xml:space="preserve">
+    <value>مدیریت اعضا</value>
+  </data>
+  <data name="DossierAccountingReport" xml:space="preserve">
+    <value>گزارش صورت مالی حساب پرونده</value>
+  </data>
 </root>

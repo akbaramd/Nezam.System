@@ -8,6 +8,10 @@
 @section styles{
     <!-- Sweet Alert css-->
     <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+<!-- Select2 CSS -->
+<link href="~/assets/libs/select2/css/select2.min.css" rel="stylesheet" />
+<!-- Persian Date Picker CSS (example using `persian-datepicker`) -->
+<link href="~/assets/libs/pwt.datepicker/css/persian-datepicker.min.css" rel="stylesheet" />
 }
 
 <div class="row">
@@ -18,14 +22,53 @@
             </div>
             <div class="card-body">
                 <form id="reportForm" method="post">
+                  
+
+                    <!-- Start Date -->
                     <div class="mb-3">
-                        <label asp-for="FilterModel.CitySyncCode" class="form-label">کد همسان‌سازی شهر</label>
-                        <select asp-for="FilterModel.CitySyncCode" class="form-control" asp-items="Model.Cities"></select>
-                        <span asp-validation-for="FilterModel.CitySyncCode" class="text-danger"></span>
+                        <label asp-for="FilterModel.StartAt" class="form-label">تاریخ شروع</label>
+                        <input asp-for="FilterModel.StartAt" type="text" class="form-control persian-date-picker" />
+                        <span asp-validation-for="FilterModel.StartAt" class="text-danger"></span>
                     </div>
+
+                    <!-- End Date -->
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.EndAt" class="form-label">تاریخ پایان</label>
+                        <input asp-for="FilterModel.EndAt" type="text" class="form-control persian-date-picker" />
+                        <span asp-validation-for="FilterModel.EndAt" class="text-danger"></span>
+                    </div>
+                    
+                    <!-- City Sync Code (Multiple Selection with Select2) -->
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.CitySyncCodes" class="form-label">شهر</label>
+                        <select asp-for="FilterModel.CitySyncCodes" class="form-control select2" multiple="multiple" asp-items="Model.Cities"></select>
+                        <span asp-validation-for="FilterModel.CitySyncCodes" class="text-danger"></span>
+                    </div>
+                    <!-- Dossier Number -->
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.DossierNumber" class="form-label">شماره پرونده</label>
+                        <input asp-for="FilterModel.DossierNumber" type="text" class="form-control" />
+                        <span asp-validation-for="FilterModel.DossierNumber" class="text-danger"></span>
+                    </div>
+
+                    <!-- Membership Number -->
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.MembershipNumber" class="form-label">کد عضویت</label>
+                        <input asp-for="FilterModel.MembershipNumber" type="text" class="form-control" />
+                        <span asp-validation-for="FilterModel.MembershipNumber" class="text-danger"></span>
+                    </div>
+
+                    <!-- Service Field (Multiple Selection with Select2) -->
+                    <div class="mb-3">
+                        <label asp-for="FilterModel.ServiceFields" class="form-label">رشته</label>
+                        <select asp-for="FilterModel.ServiceFields" class="form-control select2" multiple="multiple" asp-items="Model.ServiceFields"></select>
+                        <span asp-validation-for="FilterModel.ServiceFields" class="text-danger"></span>
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100">ساخت گزارش (Excel)</button>
                 </form>
             </div>
+
         </div>
     </div>
 
@@ -65,7 +108,7 @@
                                     <td>@item.LastName</td>
                                     <td>@item.Field</td>
                                     <td>@item.MembershipCode</td>
-                                    <td>@item.FormalCode</td>
+                                    <td>@item.DossierFormalCode</td>
                                     <td>@item.Payment1Amount</td>
                                     <td>@item.Payment1Remaining</td>
                                     <td>@item.Payment1Status</td>
@@ -86,6 +129,29 @@
 </div>
 
 @section scripts {
-    <!-- App js -->
+
+<!-- Select2 JS -->
+<script src="~/assets/libs/select2/js/select2.full.min.js"></script>
+<script src="~/assets/libs/pwt.datepicker/js/persian-datepicker.min.js"></script>
+<!-- Persian Date Picker JS (example using `persian-datepicker`) -->
+
+<script>
+    $(document).ready(function () {
+        // Initialize Select2
+        $('.select2').select2();
+
+        // Initialize Persian Date Picker
+        $('.persian-date-picker').pDatepicker({
+            format: 'YYYY/MM/DD',
+            autoClose: true,
+            formatter: function(unix) {
+                var date = new persianDate(unix);
+                var gregorian = date.toLocale('en').toCalendar('persian');
+                return gregorian.format("YYYY-MM-DD");
+            }
+        });
+    });
+</script>
+<!-- App js -->
     <script src="/assets/js/app.js"></script>
 }

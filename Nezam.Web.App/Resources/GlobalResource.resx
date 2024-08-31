@@ -23,4 +23,16 @@
   <data name="developer" xml:space="preserve">
     <value>Developers</value>
   </data>
+  <data name="SupervisionPaymentsReports" xml:space="preserve">
+    <value>Supervision Payments Reports</value>
+  </data>
+  <data name="SearchInvolvedMembersReport" xml:space="preserve">
+    <value>Search Involved Members Report</value>
+  </data>
+  <data name="ManageMemberships" xml:space="preserve">
+    <value>Manage Memberships</value>
+  </data>
+  <data name="DossierAccountingReport" xml:space="preserve">
+    <value>Dossier Accounting Report</value>
+  </data>
 </root>
