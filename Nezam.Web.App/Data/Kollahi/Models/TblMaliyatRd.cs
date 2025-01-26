@@ -1,0 +1,10 @@
+﻿namespace Nezam.CES.Data.Models;
+
+public partial class TblMaliyatRd
+{
+    public int Id { get; set; }
+
+    public string? Title { get; set; }
+
+    public double? Perc { get; set; }
+}

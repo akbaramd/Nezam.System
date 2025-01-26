@@ -1,0 +1,18 @@
+﻿namespace Nezam.CES.Data.Models;
+
+public partial class TblTafkikPenalty
+{
+    public int Id { get; set; }
+
+    public int? EngCod { get; set; }
+
+    public int? Penalty { get; set; }
+
+    public string? Dsc { get; set; }
+
+    public int? State { get; set; }
+
+    public DateTime? Dsabt { get; set; }
+
+    public int? Sal { get; set; }
+}

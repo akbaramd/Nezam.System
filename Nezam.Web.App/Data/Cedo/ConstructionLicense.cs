@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DevExpress.Xpo;
 using Microsoft.EntityFrameworkCore;
 
 namespace Nezam.System.Web.Data.Cedo;

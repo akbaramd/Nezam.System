@@ -35,4 +35,10 @@
   <data name="DossierAccountingReport" xml:space="preserve">
     <value>Dossier Accounting Report</value>
   </data>
+  <data name="SupervisorReports" xml:space="preserve">
+    <value>SupervisorReports</value>
+  </data>
+  <data name="Supervisor" xml:space="preserve">
+    <value>Supervisor</value>
+  </data>
 </root>

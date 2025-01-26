@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Globalization;
 using CedoLib.Report;
-using DevExpress.Data.Linq.Helpers;
 using FastReport.Export.Html;
 using FastReport.Export.PdfSimple;
 using FastReport.Web;
@@ -70,6 +69,7 @@ public class SupervisionPaymentsReports : PageModel
         .Include(cl => cl.Estate)
             .ThenInclude(e => e.Municipality)
                 .ThenInclude(m => m.City)
+        .Include(cl => cl.DossierType)
         .Include(cl => cl.InvolvedMembers)
             .ThenInclude(im => im.SupervisionStepPayments)
                 .ThenInclude(isp => isp.SupervisionStep)
@@ -100,40 +100,48 @@ public class SupervisionPaymentsReports : PageModel
 
 
 
+
+
     var ress =  res
       .SelectMany(cl => cl.InvolvedMembers)
       .Select(im => new SupervisionDataVm()
       {
         ConstructionLicenseId = im.ConstructionLicenseId,
-        CityName =
-          im.ConstructionLicense.Estate.Municipality.City != null
-            ? im.ConstructionLicense.Estate.Municipality.City.Name
-            : null,
-        DossierNumber = im.ConstructionLicense.DossierNumber,
-        DossierSerial = im.ConstructionLicense.DossierSerial,
-        InvolvedMemberId = im.Id,
-        FirstName =
-          im.MemberService.ActivityLicense.Member.User.UserProfile != null
-            ? im.MemberService.ActivityLicense.Member.User.UserProfile!.FirstName
-            : null,
-        LastName =
-          im.MemberService.ActivityLicense.Member.User.UserProfile != null
-            ? im.MemberService.ActivityLicense.Member.User.UserProfile!.LastName
-            : null,
-        Field = im.MemberService.ServiceField != null ? im.MemberService.ServiceField.Title : null,
-        MembershipCode = im.MemberService.ActivityLicense.Member.MembershipCode,
-        DossierFormalCode = im.ConstructionLicense.DossierFormalCode,
-        MemberFormalCode = im.MemberService.ActivityLicense.Member.FormalCode,
-        Payments = im.SupervisionStepPayments.Where(isp => !isp.IsCoordinatorPayment).ToList(),
-        BankAccounts = im.MemberService.ActivityLicense.Member.MemberBankAcounts.ToList()
+        ConstructionGroupSubGroupTitle = im.ConstructionLicense.BuildingGroupSetting != null ? im.ConstructionLicense.BuildingGroupSetting.SubGroup.Title : string.Empty,
+        ConstructionGroupTitle = im.ConstructionLicense.BuildingGroupSetting != null ? im.ConstructionLicense.BuildingGroupSetting.SubGroup.BuildingGroup.Title : string.Empty,
+        ConstructionUnits = im.ConstructionLicense.Floors.SelectMany(x=>x.BuildingUnits).ToList(),
+          ConstructionType = im.ConstructionLicense.DossierType.Title,
+          CityName =
+            im.ConstructionLicense.Estate.Municipality.City != null
+              ? im.ConstructionLicense.Estate.Municipality.City.Name
+              : null,
+          DossierNumber = im.ConstructionLicense.DossierNumber,
+          DossierSerial = im.ConstructionLicense.DossierSerial,
+          InvolvedMemberId = im.Id,
+          FirstName =
+            im.MemberService.ActivityLicense.Member.User.UserProfile != null
+              ? im.MemberService.ActivityLicense.Member.User.UserProfile!.FirstName
+              : null,
+          LastName =
+            im.MemberService.ActivityLicense.Member.User.UserProfile != null
+              ? im.MemberService.ActivityLicense.Member.User.UserProfile!.LastName
+              : null,
+          Field = im.MemberService.ServiceField != null ? im.MemberService.ServiceField.Title : null,
+          MembershipCode = im.MemberService.ActivityLicense.Member.MembershipCode,
+          DossierFormalCode = im.ConstructionLicense.DossierFormalCode,
+          MemberFormalCode = im.MemberService.ActivityLicense.Member.FormalCode,
+          Payments = im.SupervisionStepPayments.ToList(),
+          BankAccounts = im.MemberService.ActivityLicense.Member.MemberBankAcounts.ToList()
       })
-      .Where(x => x.Payments.Any());
-    
-
+      .Where(x => x.Payments.Any()).ToList();
     // Convert to IEnumerable to perform grouping and other operations in memory
     FilteredData = ress.Select(x => new SupervisionPaymentsDataVm
         {
             ConstructionLicenseId = x.ConstructionLicenseId,
+            ConstructionGroupTitle = x.ConstructionGroupTitle,
+            ConstructionGroupSubGroupTitle = x.ConstructionGroupSubGroupTitle,
+            ConstructionArea = x.ConstructionUnits.Sum(x=>x.Area),
+            ConstructionType = x.ConstructionType,
             CityName = x.CityName ?? "",
             DossierNumber = x.DossierNumber ?? "",
             DossierSerial = x.DossierSerial ?? "",
@@ -153,6 +161,8 @@ public class SupervisionPaymentsReports : PageModel
             Payment3Amount = x.Payments.Where(p => p.SupervisionStep != null && p.SupervisionStep.FormNumber == 3 && new[] { 1, 3, 4, 5, 6 }.Contains(p.SupervisionStep.FieldId)).Max(p => (decimal?)p.Amount) ?? 0,
             Payment3Remaining = x.Payments.Where(p => p.SupervisionStep != null && p.SupervisionStep.FormNumber == 3 && new[] { 1, 3, 4, 5, 6 }.Contains(p.SupervisionStep.FieldId)).Max(p => (decimal?)p.RemainingAmount) ?? 0,
             Payment3Status = x.Payments.Where(p => p.SupervisionStep != null && p.SupervisionStep.FormNumber == 3 && new[] { 1, 3, 4, 5, 6 }.Contains(p.SupervisionStep.FieldId)).Max(p => p.PaymentStatus.Title) ?? "",
+            CoordinatorPaymentAmount = x.Payments.Where(p => p.IsCoordinatorPayment).Max(p => (decimal?)p.Amount) ?? 0,
+            CoordinatorPaymentStatus = x.Payments.Any(p => p.IsCoordinatorPayment)?x.Payments.First(p => p.IsCoordinatorPayment).PaymentStatus.Title : "",
             FinalRemainingAmount = x.Payments.Any() ?x.Payments.OrderBy(x=>x.Id).Last().RemainingAmount : 0,
             AccountNumber1 = x.BankAccounts.Any(mba => mba.BankAcountTypeId == 1)?x.BankAccounts.First(mba => mba.BankAcountTypeId == 1).AcountNumber : string.Empty,
             AccountNumber2 = x.BankAccounts.Any(mba => mba.BankAcountTypeId == 5)?x.BankAccounts.First(mba => mba.BankAcountTypeId == 5).AcountNumber : string.Empty,
@@ -188,99 +198,119 @@ public class SupervisionPaymentsReports : PageModel
     worksheet.Cells[1, 3].Value = "شماره پرونده";
     worksheet.Cells[1, 4].Value = "سال پرونده"; // Year of the Dossier
     worksheet.Cells[1, 5].Value = "سری پرونده"; // Series of the Dossier
-    worksheet.Cells[1, 6].Value = "شماره عضویت";
-    worksheet.Cells[1, 7].Value = "نام";
-    worksheet.Cells[1, 8].Value = "نام خانوادگی";
-    worksheet.Cells[1, 9].Value = "رشته";
-    worksheet.Cells[1, 10].Value = "کد تفصیلی پرونده";
-    worksheet.Cells[1, 11].Value = "کد تفصیلی کاربر";
-    worksheet.Cells[1, 12].Value = "مبلغ پرداخت اول";
-    worksheet.Cells[1, 13].Value = "مبلغ باقی‌مانده پرداخت اول";
-    worksheet.Cells[1, 14].Value = "وضعیت پرداخت اول";
-    worksheet.Cells[1, 15].Value = "مبلغ پرداخت دوم";
-    worksheet.Cells[1, 16].Value = "مبلغ باقی‌مانده پرداخت دوم";
-    worksheet.Cells[1, 17].Value = "وضعیت پرداخت دوم";
-    worksheet.Cells[1, 18].Value = "مبلغ پرداخت سوم";
-    worksheet.Cells[1, 19].Value = "مبلغ باقی‌مانده پرداخت سوم";
-    worksheet.Cells[1, 20].Value = "وضعیت پرداخت سوم";
-    worksheet.Cells[1, 21].Value = "مبلغ باقی‌مانده";
-    worksheet.Cells[1, 22].Value = "شماره حساب 1";
-    worksheet.Cells[1, 23].Value = "شماره حساب 2";
-    
-    
-// Format header
-using (var range = worksheet.Cells[1, 1, 1, 23])
-{
-    range.Style.Font.Bold = true;
-    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-    range.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-}
+    worksheet.Cells[1, 6].Value = "گروه";
+    worksheet.Cells[1, 7].Value = "زیر گروه";
+    worksheet.Cells[1, 8].Value = "متراژ";
+    worksheet.Cells[1, 9].Value = "نوع";
+    worksheet.Cells[1, 10].Value = "شماره عضویت";
+    worksheet.Cells[1, 11].Value = "نام";
+    worksheet.Cells[1, 12].Value = "نام خانوادگی";
+    worksheet.Cells[1, 13].Value = "رشته";
+    worksheet.Cells[1, 14].Value = "کد تفصیلی پرونده";
+    worksheet.Cells[1, 15].Value = "کد تفصیلی کاربر";
+    worksheet.Cells[1, 16].Value = "مبلغ پرداخت اول";
+    worksheet.Cells[1, 17].Value = "مبلغ باقی‌مانده پرداخت اول";
+    worksheet.Cells[1, 18].Value = "وضعیت پرداخت اول";
+    worksheet.Cells[1, 19].Value = "مبلغ پرداخت دوم";
+    worksheet.Cells[1, 20].Value = "مبلغ باقی‌مانده پرداخت دوم";
+    worksheet.Cells[1, 21].Value = "وضعیت پرداخت دوم";
+    worksheet.Cells[1, 22].Value = "مبلغ پرداخت سوم";
+    worksheet.Cells[1, 23].Value = "مبلغ باقی‌مانده پرداخت سوم";
+    worksheet.Cells[1, 24].Value = "وضعیت پرداخت سوم";
+    worksheet.Cells[1, 25].Value = "مبلغ پرداخت هماهنگ کننده";
+    worksheet.Cells[1, 26].Value = "وضعیت پرداخت هماهنگ کننده";
+    worksheet.Cells[1, 27].Value = "مبلغ باقی‌مانده";
+    worksheet.Cells[1, 28].Value = "شماره حساب 1";
+    worksheet.Cells[1, 29].Value = "شماره حساب 2";
 
-// Add rows
-for (var i = 0; i < FilteredData.Count; i++)
-{
-    var item = FilteredData[i];
-    worksheet.Cells[i + 2, 1].Value = item.ConstructionLicenseId;
-    worksheet.Cells[i + 2, 2].Value = item.CityName;
-    worksheet.Cells[i + 2, 3].Value = item.DossierNumber;
+    // Format header
+    using (var range = worksheet.Cells[1, 1, 1, 29])
+    {
+        range.Style.Font.Bold = true;
+        range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+        range.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+        range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+    }
 
-    // Split "شماره سریال" into "سال پرونده" and "سری پرونده"
-    var serialParts = item.DossierSerial?.Split('-');
-    worksheet.Cells[i + 2, 4].Value = serialParts?.Length > 1 ? serialParts[1] : string.Empty; // Year of the Dossier
-    worksheet.Cells[i + 2, 5].Value = serialParts?.Length > 2 ? serialParts[2] : string.Empty; // Series of the Dossier
+    // Add rows
+    for (var i = 0; i < FilteredData.Count; i++)
+    {
+        var item = FilteredData[i];
+        worksheet.Cells[i + 2, 1].Value = item.ConstructionLicenseId;
+        worksheet.Cells[i + 2, 2].Value = item.CityName;
+        worksheet.Cells[i + 2, 3].Value = item.DossierNumber;
 
-    worksheet.Cells[i + 2, 6].Value = item.MembershipCode;
-    worksheet.Cells[i + 2, 7].Value = item.FirstName;
-    worksheet.Cells[i + 2, 8].Value = item.LastName;
-    worksheet.Cells[i + 2, 9].Value = item.Field;
-    worksheet.Cells[i + 2, 10].Value = item.DossierFormalCode;
-    worksheet.Cells[i + 2, 11].Value = item.MemberFormalCode;
+        // Split "شماره سریال" into "سال پرونده" and "سری پرونده"
+        var serialParts = item.DossierSerial?.Split('-');
+        worksheet.Cells[i + 2, 4].Value = serialParts?.Length > 1 ? serialParts[1] : string.Empty; // Year of the Dossier
+        worksheet.Cells[i + 2, 5].Value = serialParts?.Length > 2 ? serialParts[2] : string.Empty; // Series of the Dossier
 
-    // Payment 1 - Light Green
-    worksheet.Cells[i + 2, 12].Value = item.Payment1Amount;
-    worksheet.Cells[i + 2, 12].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 12].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(198, 239, 206)); // Light green
+        worksheet.Cells[i + 2, 6].Value = item.ConstructionGroupTitle;
+        worksheet.Cells[i + 2, 7].Value = item.ConstructionGroupSubGroupTitle;
+        worksheet.Cells[i + 2, 8].Value = item.ConstructionArea;
+        worksheet.Cells[i + 2, 9].Value = item.ConstructionType;
+        worksheet.Cells[i + 2, 10].Value = item.MembershipCode;
+        worksheet.Cells[i + 2, 11].Value = item.FirstName;
+        worksheet.Cells[i + 2, 12].Value = item.LastName;
+        worksheet.Cells[i + 2, 13].Value = item.Field;
+        worksheet.Cells[i + 2, 14].Value = item.DossierFormalCode;
+        worksheet.Cells[i + 2, 15].Value = item.MemberFormalCode;
 
-    worksheet.Cells[i + 2, 13].Value = item.Payment1Remaining;
-    worksheet.Cells[i + 2, 13].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 13].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(198, 239, 206)); // Light green
+        // Payment 1 - Slightly dark green
+        worksheet.Cells[i + 2, 16].Value = item.Payment1Amount;
+        worksheet.Cells[i + 2, 16].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 16].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(178, 219, 186)); // Slightly dark green
 
-    worksheet.Cells[i + 2, 14].Value = item.Payment1Status;
-    worksheet.Cells[i + 2, 14].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 14].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(198, 239, 206)); // Light green
+        worksheet.Cells[i + 2, 17].Value = item.Payment1Remaining;
+        worksheet.Cells[i + 2, 17].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 17].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(178, 219, 186)); // Slightly dark green
 
-    // Payment 2 - Medium Green
-    worksheet.Cells[i + 2, 15].Value = item.Payment2Amount;
-    worksheet.Cells[i + 2, 15].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 15].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(147, 196, 125)); // Medium green
+        worksheet.Cells[i + 2, 18].Value = item.Payment1Status;
+        worksheet.Cells[i + 2, 18].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 18].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(178, 219, 186)); // Slightly dark green
 
-    worksheet.Cells[i + 2, 16].Value = item.Payment2Remaining;
-    worksheet.Cells[i + 2, 16].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 16].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(147, 196, 125)); // Medium green
+        // Payment 2 - Medium green
+        worksheet.Cells[i + 2, 19].Value = item.Payment2Amount;
+        worksheet.Cells[i + 2, 19].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 19].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(147, 196, 125)); // Medium green
 
-    worksheet.Cells[i + 2, 17].Value = item.Payment2Status;
-    worksheet.Cells[i + 2, 17].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 17].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(147, 196, 125)); // Medium green
+        worksheet.Cells[i + 2, 20].Value = item.Payment2Remaining;
+        worksheet.Cells[i + 2, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 20].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(147, 196, 125)); // Medium green
 
-    // Payment 3 - Dark Green
-    worksheet.Cells[i + 2, 18].Value = item.Payment3Amount;
-    worksheet.Cells[i + 2, 18].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 18].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(106, 168, 79)); // Dark green
+        worksheet.Cells[i + 2, 21].Value = item.Payment2Status;
+        worksheet.Cells[i + 2, 21].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 21].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(147, 196, 125)); // Medium green
 
-    worksheet.Cells[i + 2, 19].Value = item.Payment3Remaining;
-    worksheet.Cells[i + 2, 19].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 19].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(106, 168, 79)); // Dark green
+        // Payment 3 - Dark green
+        worksheet.Cells[i + 2, 22].Value = item.Payment3Amount;
+        worksheet.Cells[i + 2, 22].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 22].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(116, 158, 89)); // Dark green
 
-    worksheet.Cells[i + 2, 20].Value = item.Payment3Status;
-    worksheet.Cells[i + 2, 20].Style.Fill.PatternType = ExcelFillStyle.Solid;
-    worksheet.Cells[i + 2, 20].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(106, 168, 79)); // Dark green
+        worksheet.Cells[i + 2, 23].Value = item.Payment3Remaining;
+        worksheet.Cells[i + 2, 23].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 23].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(116, 158, 89)); // Dark green
 
-    worksheet.Cells[i + 2, 21].Value = item.FinalRemainingAmount;
-    worksheet.Cells[i + 2, 22].Value = item.AccountNumber1;
-    worksheet.Cells[i + 2, 23].Value = item.AccountNumber2;
-}
-worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+        worksheet.Cells[i + 2, 24].Value = item.Payment3Status;
+        worksheet.Cells[i + 2, 24].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 24].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(116, 158, 89)); // Dark green
+
+        // Coordinator Payment - Slightly darker green
+        worksheet.Cells[i + 2, 25].Value = item.CoordinatorPaymentAmount;
+        worksheet.Cells[i + 2, 25].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 25].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(96, 138, 69)); // Slightly darker green
+
+        worksheet.Cells[i + 2, 26].Value = item.CoordinatorPaymentStatus;
+        worksheet.Cells[i + 2, 26].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[i + 2, 26].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(96, 138, 69)); // Slightly darker green
+
+        worksheet.Cells[i + 2, 27].Value = item.FinalRemainingAmount;
+        worksheet.Cells[i + 2, 28].Value = item.AccountNumber1;
+        worksheet.Cells[i + 2, 29].Value = item.AccountNumber2;
+    }
+
+    worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
 
 // Apply gray border to all cells in the worksheet (including headers)
 using (var range = worksheet.Cells[1, 1, worksheet.Dimension.End.Row, worksheet.Dimension.End.Column])
@@ -358,6 +388,10 @@ public class SupervisionDataVm
   public string? MemberFormalCode { get; set; }
   public List<SupervisionStepPayment> Payments { get; set; } = new List<SupervisionStepPayment>();
   public List<MemberBankAcount> BankAccounts { get; set; } = new List<MemberBankAcount>();
+  public string? ConstructionGroupTitle { get; set; }
+  public List<BuildingUnit> ConstructionUnits { get; set; } = new();
+  public string? ConstructionGroupSubGroupTitle { get; set; }
+  public string? ConstructionType { get; set; }
 }
 
 public class SupervisionPaymentsDataVm
@@ -393,4 +427,11 @@ public class SupervisionPaymentsDataVm
     // Bank account numbers
     public string? AccountNumber1 { get; set; }              // Account number of type 1
     public string? AccountNumber2 { get; set; }              // Account number of type 5
+    public decimal? CoordinatorPaymentAmount { get; set; }
+    public string? CoordinatorPaymentStatus  { get; set; }
+    
+    public string? ConstructionGroupTitle { get; set; }
+    public double? ConstructionArea { get; set; }
+    public string? ConstructionGroupSubGroupTitle { get; set; }
+    public string? ConstructionType { get; set; }
 }

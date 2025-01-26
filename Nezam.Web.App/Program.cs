@@ -6,6 +6,7 @@ using Nezam.System.Web.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Nezam.CES.Data;
 using Nezam.System.Web;
 using Nezam.System.Web.Data.Models;
 using Nezam.System.Web.Data.Cedo;
@@ -27,6 +28,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddDbContext<CedoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CedoConnection")));
+builder.Services.AddDbContext<KolahiDbContext>(options =>
+  options.UseSqlServer(builder.Configuration.GetConnectionString("KolahiConnection")));
 
 // Add Identity services
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");

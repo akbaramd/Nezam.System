@@ -73,6 +73,20 @@ public static class MenuConfig
       },
       new MenuItem
       {
+        Title = "نظارت",
+        RequiredClaim = "Supervisor",
+        Children = new List<MenuItem>
+        {
+          new MenuItem
+          {
+            Title = "گزارشات",
+            Page = "/Documents/Index",
+            RequiredClaim = "SupervisorReports"
+          },
+        }
+      },
+      new MenuItem
+      {
         Title = "مدیریت",
         RequiredClaim = "AdminAccess",
         Children = new List<MenuItem>

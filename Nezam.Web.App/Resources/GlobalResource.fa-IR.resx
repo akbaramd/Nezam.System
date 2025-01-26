@@ -42,4 +42,10 @@
   <data name="DossierAccountingReport" xml:space="preserve">
     <value>گزارش صورت مالی حساب پرونده</value>
   </data>
+  <data name="Supervisor" xml:space="preserve">
+    <value>نظارت</value>
+  </data>
+  <data name="SupervisorReports" xml:space="preserve">
+    <value>گزارشات نظارت</value>
+  </data>
 </root>

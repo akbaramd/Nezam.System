@@ -140,6 +140,7 @@ public class SearchInvolvedMembersReport : PageModel
 
 private async Task<List<InvolvedMemberViewModel>> GetInvolvedMembersAsync(string membershipCode)
 {
+  var persianCalendar = new PersianCalendar();
     var query = _context.InvolvedMembers
       .Include(im => im.MemberService)
       .ThenInclude(ms => ms.ActivityLicense)
@@ -157,6 +158,7 @@ private async Task<List<InvolvedMemberViewModel>> GetInvolvedMembersAsync(string
       .Include(im => im.MemberService.ServiceField)
       .Include(im => im.Status).Include(involvedMember => involvedMember.ConstructionLicense)
       .ThenInclude(constructionLicense => constructionLicense.Floors).ThenInclude(floor => floor.BuildingUnits)
+      .Include(x=>x.SupervisionStepForms).ThenInclude(x=>x.Step)
       .AsQueryable();
 
     if (!string.IsNullOrEmpty(membershipCode))
@@ -164,11 +166,18 @@ private async Task<List<InvolvedMemberViewModel>> GetInvolvedMembersAsync(string
         query = query.Where(im => im.MemberService.ActivityLicense.Member.MembershipCode == membershipCode || im.MemberService.ActivityLicense.Member.MembershipCode == membershipCode);
     }
 
-    if (FilterModel.QuotaYear.HasValue)
+    if (FilterModel.Years.HasValue)
     {
-        query = query.Where(im => im.QuotaYear == FilterModel.QuotaYear);
-    }
+      // Get the current Persian year
+    
+      var currentYear = persianCalendar.GetYear(DateTime.Now);
 
+      // Calculate the starting year (e.g., last 4 years)
+      var startYear = currentYear - FilterModel.Years.Value + 1;
+
+      // Filter the query for the last n years
+      query = query.Where(im => im.QuotaYear >= startYear);
+    }
     if (FilterModel.ServiceTypeId.HasValue)
     {
         query = query.Where(im => im.MemberService.ServiceTypeId == FilterModel.ServiceTypeId.Value);
@@ -193,7 +202,7 @@ private async Task<List<InvolvedMemberViewModel>> GetInvolvedMembersAsync(string
 
 
 
-    var persianCalendar = new PersianCalendar();
+   
 
     var involvedMembers = involvedMembersQuery.Select(im => new InvolvedMemberViewModel
     {
@@ -226,7 +235,8 @@ private async Task<List<InvolvedMemberViewModel>> GetInvolvedMembersAsync(string
         ServiceTypeTitle = im.MemberService.ServiceType.Title ?? string.Empty,
         ServiceFieldTitle = im.MemberService.ServiceField != null ? im.MemberService.ServiceField.Title : string.Empty,
         BuildingGroup = im.ConstructionLicense?.BuildingGroupSetting!.SubGroup.Title ?? string.Empty,
-        BuildingType = im.ConstructionLicense?.DossierType.Title ?? string.Empty
+        BuildingType = im.ConstructionLicense?.DossierType.Title ?? string.Empty,
+        LastCeiling = im.SupervisionStepForms.OrderBy(x=>x.RegDate).LastOrDefault()?.Step.FormNumber.ToString() ?? string.Empty,
     }).ToList();
 
     // Set the index values
@@ -267,10 +277,10 @@ public class SearchInvolvedMembersFilterModel
   [Required(ErrorMessage = "Membership Code is required.")]
   public string MembershipCode { get; set; } = default!;
 
-  public int? QuotaYear { get; set; }
+  public int? Years { get; set; } = 3;
   public int? ServiceTypeId { get; set; }
   public int? ServiceFieldId { get; set; }
-  public int? InvolvedMemberStatusId { get; set; }
+  public int? InvolvedMemberStatusId { get; set; } = 2;
   public int? DossierTypeId { get; set; }
 }
 
@@ -304,8 +314,9 @@ public class InvolvedMemberViewModel
   public int? QuotaYear { get; set; }
   public string ServiceTypeTitle { get; set; } = default!;
   public string ServiceFieldTitle { get; set; } = default!;
-  public string BuildingType { get; set; } = default!; // New property for BuildingType
-  public string BuildingGroup { get; set; } = default!; // New property for BuildingGroup
+  public string BuildingType { get; set; } = default!; 
+  public string LastCeiling { get; set; } = default!; 
+  public string BuildingGroup { get; set; } = default!; 
 }
 
 

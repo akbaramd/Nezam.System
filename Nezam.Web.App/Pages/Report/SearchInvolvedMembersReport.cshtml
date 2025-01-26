@@ -23,35 +23,35 @@ ViewBag.Title = "جستجوی اعضای درگیر";
                         <span asp-validation-for="FilterModel.MembershipCode" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label asp-for="FilterModel.QuotaYear" class="form-label">سال کاری</label>
-                        <input asp-for="FilterModel.QuotaYear" class="form-control" type="text" placeholder="سال کاری را وارد کنید" />
-                        <span asp-validation-for="FilterModel.QuotaYear" class="text-danger"></span>
+                        <label asp-for="FilterModel.Years" class="form-label">چند سال قبل</label>
+                        <input asp-for="FilterModel.Years" class="form-control" type="number" min="1" max="50" id="QuotaYearInput" placeholder="سال کاری را وارد کنید" />
+                        <span asp-validation-for="FilterModel.Years" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="FilterModel.ServiceTypeId" class="form-label">نوع خدمت</label>
-                        <select asp-for="FilterModel.ServiceTypeId" asp-items="Model.ServiceTypes" class="form-control">
+                        <select asp-for="FilterModel.ServiceTypeId" asp-items="Model.ServiceTypes" id="ServiceTypeIdSelect" class="form-control">
                             <option value="">همه</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="FilterModel.ServiceFieldId" class="form-label">رشته خدمت</label>
-                        <select asp-for="FilterModel.ServiceFieldId" asp-items="Model.ServiceFields" class="form-control">
+                        <select asp-for="FilterModel.ServiceFieldId" asp-items="Model.ServiceFields" id="ServiceFieldIdSelect" class="form-control">
                             <option value="">همه</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="FilterModel.InvolvedMemberStatusId" class="form-label">وضعیت عضو درگیر</label>
-                        <select asp-for="FilterModel.InvolvedMemberStatusId" asp-items="Model.InvolvedMemberStatuses" class="form-control">
+                        <select asp-for="FilterModel.InvolvedMemberStatusId" asp-items="Model.InvolvedMemberStatuses" id="InvolvedMemberStatusIdSelect" class="form-control">
                             <option value="">همه</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="FilterModel.DossierTypeId" class="form-label">نوع پرونده</label>
-                        <select asp-for="FilterModel.DossierTypeId" asp-items="Model.DossierTypes" class="form-control">
+                        <select asp-for="FilterModel.DossierTypeId" asp-items="Model.DossierTypes" id="DossierTypeIdSelect" class="form-control">
                             <option value="">همه</option>
                         </select>
                     </div>
@@ -61,11 +61,17 @@ ViewBag.Title = "جستجوی اعضای درگیر";
 
                 <div id="reportActions" class="d-flex mt-2 d-none gap-2">
                     <form class="flex-grow-1" id="downloadPdfForm" method="post" asp-page-handler="DownloadPdf">
-                        <input type="hidden" name="membershipCode" id="membershipCodeHiddenInput"/>
+                        <input type="hidden" name="membershipCode" id="pdfMembershipCodeHiddenInput"/>
+                        <input type="hidden" name="QuotaYear" id="pdfQuotaYearHiddenInput"/>
+                        <input type="hidden" name="ServiceTypeId" id="pdfServiceTypeHiddenInput"/>
+                        <input type="hidden" name="ServiceFieldId" id="pdfServiceFieldHiddenInput"/>
+                        <input type="hidden" name="InvolvedMemberStatusId" id="pdfInvolvedMemberStatusHiddenInput"/>
+                        <input type="hidden" name="DossierTypeId" id="pdfDossierTypeHiddenInput"/>
                         <button type="submit" class="btn btn-dark w-100">دانلود PDF</button>
                     </form>
                     <button type="button" class="flex-grow-1 btn btn-light" id="printButton">چاپ</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -107,12 +113,18 @@ ViewBag.Title = "جستجوی اعضای درگیر";
     function onSearchComplete() {
         Swal.close();
     }
-
     function onSearchCompleted(response) {
         if (response.success) {
             $('#resultsContent').html(response.reportHtml);
             $('#reportActions').removeClass('d-none');
-            $('#membershipCodeHiddenInput').val($('#membershipCodeInput').val()); // Set membership code in hidden input
+
+            // Set membership code in hidden input for PDF download using id
+            $('#pdfMembershipCodeHiddenInput').val($('#membershipCodeInput').val());
+            $('#pdfQuotaYearHiddenInput').val($('#QuotaYearInput').val()); // Assuming you have an input with id 'QuotaYearInput'
+            $('#pdfServiceTypeHiddenInput').val($('#ServiceTypeIdSelect').val()); // Assuming select element has id 'ServiceTypeIdSelect'
+            $('#pdfServiceFieldHiddenInput').val($('#ServiceFieldIdSelect').val()); // Assuming select element has id 'ServiceFieldIdSelect'
+            $('#pdfInvolvedMemberStatusHiddenInput').val($('#InvolvedMemberStatusIdSelect').val()); // Assuming select element has id 'InvolvedMemberStatusIdSelect'
+            $('#pdfDossierTypeHiddenInput').val($('#DossierTypeIdSelect').val()); // Assuming select element has id 'DossierTypeIdSelect'
         } else {
             Swal.fire({
                 icon: 'error',
@@ -120,7 +132,8 @@ ViewBag.Title = "جستجوی اعضای درگیر";
                 text: response.errorMessage
             });
         }
-    }
+}
+
 
     function onSearchFailed() {
         Swal.fire({
