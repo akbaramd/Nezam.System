@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model Nezam.System.Web.Pages.Admin.Users.EditModel
 @{
 ViewBag.ptitle = "مدیریت کاربران";
@@ -30,6 +30,9 @@ ViewBag.pagetitle = "ویرایش کاربران";
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="claims-tab" data-bs-toggle="tab" href="#claims" role="tab" aria-controls="claims" aria-selected="false">مدیریت دسترسی‌ها</a>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="agencies-tab" data-bs-toggle="tab" href="#agencies" role="tab" aria-controls="agencies" aria-selected="false">دفاتر استان</a>
+                </li>
             </ul>
 
             <div class="tab-content" id="userTabsContent">
@@ -60,6 +63,14 @@ ViewBag.pagetitle = "ویرایش کاربران";
                     <div class="mb-3">
                         <h4>مدیریت دسترسی‌ها</h4>
                         @await Html.PartialAsync("_UserClaimsPartial", Model)
+                    </div>
+                </div>
+                
+                <!-- Agencies Management Tab -->
+                <div class="tab-pane fade" id="agencies" role="tabpanel" aria-labelledby="agencies-tab">
+                    <div class="mb-3">
+                        <h4>مدیریت دفاتر استان</h4>
+                        @await Html.PartialAsync("_UserAgenciesPartial", Model)
                     </div>
                 </div>
             </div>

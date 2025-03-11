@@ -34,6 +34,7 @@ ViewBag.pagetitle = "لیست اعضا";
                         <th>شماره عضویت</th>
                         <th>نام</th>
                         <th>کد ملی</th>
+                        <th>دفاتر</th>
                         <th>عملیات</th>
                     </tr>
                     </thead>
@@ -46,6 +47,7 @@ ViewBag.pagetitle = "لیست اعضا";
                         <td>@member.MembershipCode</td>
                         <td>@member.User.UserProfile?.FirstName @member.User.UserProfile?.LastName</td>
                         <td>@member.User.UserProfile?.NationalCode</td>
+                        <td>@string.Join(',',@member.ActivityLicenses.SelectMany(x=>x.MemberServices).Select(x=>x.City.Name).Distinct())</td>
                         <td>
                             @if (User.HasClaim("SearchInvolvedMembersReport", "true"))
                             {

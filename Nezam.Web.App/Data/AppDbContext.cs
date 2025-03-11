@@ -11,4 +11,6 @@ public class AppDbContext : IdentityDbContext<User,IdentityRole<Guid>,Guid>
   {
     
   }
+
+  public DbSet<UserAgency> UserAgencies { get; set; }
 }

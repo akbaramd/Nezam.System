@@ -14,5 +14,6 @@ public class TblEesDocumentsConfiguration : IEntityTypeConfiguration<TblEesDocum
         Entity.Property(e => e.UserId).HasColumnName("ozviyat_no");
         Entity.Property(e => e.Type).HasColumnName("type");
         Entity.Property(e => e.State).HasColumnName("state");
+        Entity.Property(e => e.IsRead).HasColumnName("isRead");
     }
 }

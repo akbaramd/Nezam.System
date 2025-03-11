@@ -10,4 +10,5 @@ public class TblEesDocuments
     public DateTime? CreatedAt { get; set; }
     public int State { get; set; }
     public int Type { get; set; }
+    public bool IsRead { get; set; }
 }

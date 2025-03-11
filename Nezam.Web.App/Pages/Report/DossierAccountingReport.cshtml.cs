@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using CedoLib.Report;
 using FastReport.Export.Html;
 using FastReport.Export.PdfSimple;
@@ -6,6 +7,7 @@ using FastReport.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Nezam.System.Web.Data;
 using Nezam.System.Web.Data.Cedo;
 using Nezam.System.Web.Models;
@@ -37,11 +39,19 @@ public class DossierAccountingReport : PageModel
     {
         try
         {
-            var reportVm = await GetReportDataAsync(FilterModel.DossierNumber);
+            // Get the current user's agencies
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var appDbContext = _provider.GetRequiredService<AppDbContext>();
+            var userAgencies = await appDbContext.UserAgencies
+                .Where(ua => currentUserId != null && ua.UserId == Guid.Parse(currentUserId))
+                .Select(ua => ua.AgencyCode)
+                .ToListAsync();
+          
+            var reportVm = await GetReportDataAsync(FilterModel.DossierNumber, userAgencies);
 
             if (reportVm == null)
             {
-                throw new Exception("پرونده با این شماره یافت نشد.");
+              throw new Exception("پرونده با این شماره یافت نشد یا شما دسترسی به پرونده در شهر دیگر ندارید.");
             }
 
             await SetupWebReportAsync(reportVm);
@@ -57,11 +67,19 @@ public class DossierAccountingReport : PageModel
     {
         try
         {
-            var reportVm = await GetReportDataAsync(dossierNumber);
+            // Get the current user's agencies
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var appDbContext = _provider.GetRequiredService<AppDbContext>();
+            var userAgencies = await appDbContext.UserAgencies
+                .Where(ua => currentUserId != null && ua.UserId == Guid.Parse(currentUserId))
+                .Select(ua => ua.AgencyCode)
+                .ToListAsync();
+          
+            var reportVm = await GetReportDataAsync(dossierNumber, userAgencies);
 
             if (reportVm == null)
             {
-                throw new Exception("پرونده با این شماره یافت نشد.");
+                throw new Exception("پرونده با این شماره یافت نشد یا شما دسترسی به پرونده در شهر دیگر ندارید.");
             }
 
             await SetupWebReportAsync(reportVm);
@@ -90,14 +108,31 @@ public class DossierAccountingReport : PageModel
         return Task.CompletedTask;
     }
 
-    private async Task<BillReportVm> GetReportDataAsync(string dossierNumber)
+    private async Task<BillReportVm?> GetReportDataAsync(string dossierNumber, List<int>? userAgencies = null)
     {
         var ds = _provider.GetRequiredService<CedoContext>();
-        var cl = ds.ConstructionLicenses.FirstOrDefault(x => x.DossierNumber != null && x.DossierNumber.Equals(dossierNumber));
+        
+        // Query construction license with city information
+        var query = ds.ConstructionLicenses
+            .Include(cl => cl.Estate)
+            .ThenInclude(e => e.Municipality)
+            .ThenInclude(m => m.City)
+            .Where(cl => cl.DossierNumber != null && cl.DossierNumber.Equals(dossierNumber));
+        
+        // Apply agency access control if user has agencies
+        if (userAgencies != null && userAgencies.Any())
+        {
+            query = query.Where(cl => 
+                cl.Estate.Municipality.City != null && 
+                cl.Estate.Municipality.City.SyncCode.HasValue && 
+                userAgencies.Contains(cl.Estate.Municipality.City.SyncCode.Value));
+        }
+        
+        var cl = await query.FirstOrDefaultAsync();
 
         if (cl == null)
         {
-            throw new Exception("پرونده با این شماره یافت نشد.");
+            return null;
         }
 
         return await BillReportHelper.GetDossierInitialBillReportDataAsync(_provider, cl.Id);

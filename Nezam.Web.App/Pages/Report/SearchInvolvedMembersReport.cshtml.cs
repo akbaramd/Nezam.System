@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Security.Claims;
 using FastReport.Export.Html;
 using FastReport.Export.PdfSimple;
 using FastReport.Web;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Nezam.System.Web.Data;
 using Nezam.System.Web.Data.Cedo;
 using Velzon;
 
@@ -64,7 +66,32 @@ public class SearchInvolvedMembersReport : PageModel
   {
     try
     {
- 
+      // Get the current user's agencies
+      var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+      var appDbContext = HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+      var userAgencies = await appDbContext.UserAgencies
+        .Where(ua => currentUserId != null && ua.UserId == Guid.Parse(currentUserId))
+        .Select(ua => ua.AgencyCode)
+        .ToListAsync();
+
+      // Check if the member belongs to one of the user's agencies
+      var memberAgencies = await _context.Members
+        .Where(m => m.MembershipCode == FilterModel.MembershipCode)
+        .SelectMany(m => m.ActivityLicenses)
+        .SelectMany(al => al.MemberServices)
+        .Where(ms => ms.City != null && ms.City.SyncCode.HasValue)
+        .Select(ms => ms.City.SyncCode!.Value)
+        .Distinct()
+        .ToListAsync();
+
+      // If user has agencies and none match the member's agencies, return access denied
+      if (userAgencies.Any() && memberAgencies.Any() && !memberAgencies.Any(ma => userAgencies.Contains(ma)))
+      {
+        return new JsonResult(new { 
+          success = false, 
+          errorMessage = "شما دسترسی به اطلاعات اعضای شهرهای دیگر را ندارید." 
+        });
+      }
 
       await SetupWebReportAsync(FilterModel.MembershipCode);
       return new JsonResult(new { success = true, reportHtml = await RenderReportAsync() });
@@ -73,25 +100,6 @@ public class SearchInvolvedMembersReport : PageModel
     {
       return new JsonResult(new { success = false, errorMessage = "Error in generating the report: " + ex.Message });
     }
-  }
-
-  private async Task<InvolvedMemberReportParameters> GetParameterAsync(string filterModelMembershipCode)
-  {
-    var member = await _context.Members.Include(member => member.User).ThenInclude(paraUser => paraUser.UserProfile)
-      .Include(member => member.ActivityLicenses).ThenInclude(activityLicense => activityLicense.MemberServices)
-      .ThenInclude(memberService => memberService.ServiceField).Include(member => member.ActivityLicenses)
-      .ThenInclude(activityLicense => activityLicense.MemberServices).ThenInclude(memberService => memberService.City).FirstOrDefaultAsync(x=>x.MembershipCode.Equals(filterModelMembershipCode));
-
-    return new InvolvedMemberReportParameters()
-    {
-      FirstName = member?.User.UserProfile?.FirstName??string.Empty,
-      LastName = member?.User?.UserProfile?.LastName??string.Empty,
-      NationalNumber = member?.User?.UserProfile?.NationalCode??string.Empty,
-       PhoneNumber= member?.User?.PhoneNumber??string.Empty,
-       MembershipNumber = member?.MembershipCode??string.Empty,
-       Agency = string.Join(",", member?.ActivityLicenses?.FirstOrDefault()?.MemberServices.Select(x => x.City.Name ?? string.Empty).Distinct() ?? new List<string>())
-    };
-
   }
 
   public async Task<IActionResult> OnPostDownloadPdf(string membershipCode)
@@ -137,116 +145,156 @@ public class SearchInvolvedMembersReport : PageModel
     WebReport.Report.Prepare();
   }
 
+  private async Task<InvolvedMemberReportParameters> GetParameterAsync(string filterModelMembershipCode)
+  {
+    var member = await _context.Members.Include(member => member.User).ThenInclude(paraUser => paraUser.UserProfile)
+      .Include(member => member.ActivityLicenses).ThenInclude(activityLicense => activityLicense.MemberServices)
+      .ThenInclude(memberService => memberService.ServiceField).Include(member => member.ActivityLicenses)
+      .ThenInclude(activityLicense => activityLicense.MemberServices).ThenInclude(memberService => memberService.City).FirstOrDefaultAsync(x=>x.MembershipCode.Equals(filterModelMembershipCode));
 
+    return new InvolvedMemberReportParameters()
+    {
+      FirstName = member?.User.UserProfile?.FirstName??string.Empty,
+      LastName = member?.User?.UserProfile?.LastName??string.Empty,
+      NationalNumber = member?.User?.UserProfile?.NationalCode??string.Empty,
+      PhoneNumber= member?.User?.PhoneNumber??string.Empty,
+      MembershipNumber = member?.MembershipCode??string.Empty,
+      Agency = string.Join(",", member?.ActivityLicenses?.FirstOrDefault()?.MemberServices.Select(x => x.City.Name ?? string.Empty).Distinct() ?? new List<string>())
+    };
+
+  }
 private async Task<List<InvolvedMemberViewModel>> GetInvolvedMembersAsync(string membershipCode)
 {
   var persianCalendar = new PersianCalendar();
-    var query = _context.InvolvedMembers
-      .Include(im => im.MemberService)
-      .ThenInclude(ms => ms.ActivityLicense)
-      .ThenInclude(al => al.Member)
-      .ThenInclude(m => m.User)
-      .ThenInclude(u => u.UserProfile)
-      .Include(im => im.ConstructionLicense)
-      .ThenInclude(cl => cl.Owners) // Including MainOwner to access FirstName, LastName
-      .Include(im => im.ConstructionLicense)
-      .ThenInclude(cl => cl.BuildingGroupSetting) // Including BuildingGroupSetting for BuildingGroup
-      .ThenInclude(cl => cl!.SubGroup) // Including BuildingGroupSetting for BuildingGroup
-      .Include(im => im.ConstructionLicense)
-      .ThenInclude(cl => cl.DossierType) // Including DossierType for BuildingType
-      .Include(im => im.MemberService.ServiceType)
-      .Include(im => im.MemberService.ServiceField)
-      .Include(im => im.Status).Include(involvedMember => involvedMember.ConstructionLicense)
-      .ThenInclude(constructionLicense => constructionLicense.Floors).ThenInclude(floor => floor.BuildingUnits)
-      .Include(x=>x.SupervisionStepForms).ThenInclude(x=>x.Step)
-      .AsQueryable();
+  
+  // Get the current user's agencies
+  var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+  var appDbContext = HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+  var userAgencies = await appDbContext.UserAgencies
+    .Where(ua => currentUserId != null && ua.UserId == Guid.Parse(currentUserId))
+    .Select(ua => ua.AgencyCode)
+    .ToListAsync();
+  
+  var query = _context.InvolvedMembers
+    .Include(im => im.MemberService)
+    .ThenInclude(ms => ms.ActivityLicense)
+    .ThenInclude(al => al.Member)
+    .ThenInclude(m => m.User)
+    .ThenInclude(u => u.UserProfile)
+    .Include(im => im.ConstructionLicense)
+    .ThenInclude(cl => cl.Owners) // Including MainOwner to access FirstName, LastName
+    .Include(im => im.ConstructionLicense)
+    .ThenInclude(cl => cl.BuildingGroupSetting) // Including BuildingGroupSetting for BuildingGroup
+    .ThenInclude(cl => cl!.SubGroup) // Including BuildingGroupSetting for BuildingGroup
+    .Include(im => im.ConstructionLicense)
+    .ThenInclude(cl => cl.DossierType) // Including DossierType for BuildingType
+    .Include(im => im.MemberService.ServiceType)
+    .Include(im => im.MemberService.ServiceField)
+    .Include(im => im.Status).Include(involvedMember => involvedMember.ConstructionLicense)
+    .ThenInclude(constructionLicense => constructionLicense.Floors).ThenInclude(floor => floor.BuildingUnits)
+    .Include(x=>x.SupervisionStepForms).ThenInclude(x=>x.Step)
+    .Include(im => im.ConstructionLicense.Estate)
+    .ThenInclude(e => e.Municipality)
+    .ThenInclude(m => m.City)
+    .AsQueryable();
 
-    if (!string.IsNullOrEmpty(membershipCode))
-    {
-        query = query.Where(im => im.MemberService.ActivityLicense.Member.MembershipCode == membershipCode || im.MemberService.ActivityLicense.Member.MembershipCode == membershipCode);
-    }
+  // Filter by user's agencies - only show members whose construction license city matches user's agencies
+  if (userAgencies.Any())
+  {
+    query = query.Where(im => 
+      im.ConstructionLicense.Estate != null && 
+      im.ConstructionLicense.Estate.Municipality != null && 
+      im.ConstructionLicense.Estate.Municipality.City != null && 
+      im.ConstructionLicense.Estate.Municipality.City.SyncCode != null &&
+      userAgencies.Contains(im.ConstructionLicense.Estate.Municipality.City.SyncCode!.Value));
+  }
 
-    if (FilterModel.Years.HasValue)
-    {
-      // Get the current Persian year
+  if (!string.IsNullOrEmpty(membershipCode))
+  {
+    query = query.Where(im => im.MemberService.ActivityLicense.Member.MembershipCode == membershipCode || im.MemberService.ActivityLicense.Member.MembershipCode == membershipCode);
+  }
+
+  if (FilterModel.Years.HasValue)
+  {
+    // Get the current Persian year
     
-      var currentYear = persianCalendar.GetYear(DateTime.Now);
+    var currentYear = persianCalendar.GetYear(DateTime.Now);
 
-      // Calculate the starting year (e.g., last 4 years)
-      var startYear = currentYear - FilterModel.Years.Value + 1;
+    // Calculate the starting year (e.g., last 4 years)
+    var startYear = currentYear - FilterModel.Years.Value + 1;
 
-      // Filter the query for the last n years
-      query = query.Where(im => im.QuotaYear >= startYear);
-    }
-    if (FilterModel.ServiceTypeId.HasValue)
-    {
-        query = query.Where(im => im.MemberService.ServiceTypeId == FilterModel.ServiceTypeId.Value);
-    }
+    // Filter the query for the last n years
+    query = query.Where(im => im.QuotaYear >= startYear);
+  }
+  if (FilterModel.ServiceTypeId.HasValue)
+  {
+      query = query.Where(im => im.MemberService.ServiceTypeId == FilterModel.ServiceTypeId.Value);
+  }
 
-    if (FilterModel.ServiceFieldId.HasValue)
-    {
-        query = query.Where(im => im.MemberService.ServiceFieldId == FilterModel.ServiceFieldId.Value);
-    }
+  if (FilterModel.ServiceFieldId.HasValue)
+  {
+      query = query.Where(im => im.MemberService.ServiceFieldId == FilterModel.ServiceFieldId.Value);
+  }
 
-    if (FilterModel.InvolvedMemberStatusId.HasValue)
-    {
-        query = query.Where(im => im.StatusId == FilterModel.InvolvedMemberStatusId.Value);
-    }
+  if (FilterModel.InvolvedMemberStatusId.HasValue)
+  {
+      query = query.Where(im => im.StatusId == FilterModel.InvolvedMemberStatusId.Value);
+  }
 
-    if (FilterModel.DossierTypeId.HasValue)
-    {
-        query = query.Where(im => im.ConstructionLicense.DossierTypeId == FilterModel.DossierTypeId.Value );
-    }
+  if (FilterModel.DossierTypeId.HasValue)
+  {
+      query = query.Where(im => im.ConstructionLicense.DossierTypeId == FilterModel.DossierTypeId.Value );
+  }
 
-    var involvedMembersQuery = await query.ToListAsync();
+  var involvedMembersQuery = await query.ToListAsync();
 
 
 
    
 
-    var involvedMembers = involvedMembersQuery.Select(im => new InvolvedMemberViewModel
-    {
-        MemberId = im.MemberService.ActivityLicense.Member.Id,
-        MembershipCode = im.MemberService.ActivityLicense.Member.MembershipCode,
-        FirstName = im.ConstructionLicense.MainOwner!.FirstName ?? string.Empty,
-        LastName = im.ConstructionLicense.MainOwner!.LastName ?? string.Empty,
-        Status = im.Status.Title ?? string.Empty,
-        DossierNumber = im.ConstructionLicense.DossierNumber ?? string.Empty,
-        DossierDate = ConvertToPersianDate(im.ConstructionLicense?.DossierDate, persianCalendar),
-        RefNumber = im.ConstructionLicense?.RefNumber ?? string.Empty,
-        LicenseNumber = im.ConstructionLicense?.LicenseNumber ?? string.Empty,
-        LicenseDate = ConvertToPersianDate(im.ConstructionLicense?.LicenseDate, persianCalendar),
-        RequestDate = ConvertToPersianDate(im.ConstructionLicense?.RequestDate, persianCalendar),
-        BeforeWideningArea = im.ConstructionLicense?.BeforeWideningArea,
-        AfterWideningArea = im.ConstructionLicense?.AfterWideningArea,
-        OccupancyPercentage = im.ConstructionLicense?.OccupancyPercentage,
-        LicenseRegDate = ConvertToPersianDate(im.ConstructionLicense?.RegDate, persianCalendar),
-        InvolvedMemberStatusTitle = im.Status.Title ?? string.Empty,
-        InvolvedMemberRegDate = ConvertToPersianDate(im.RegDate, persianCalendar),
-        InvolvedMemberExpireDate = ConvertToPersianDate(im.ExpireDate, persianCalendar),
-        IsCoordinator = im.IsCoordinator,
-        WorkItem = im.WorkItem,
-        Description = im.Description ?? string.Empty,
-        ModifiedWorkItem = im.ModifiedWorkItem,
-        Metraje = im.Metraje,
-        BuildingMetraje = im.ConstructionLicense?.Floors.Where(x => x.FloorRegisterStepId == 1)
+  var involvedMembers = involvedMembersQuery.Select(im => new InvolvedMemberViewModel
+  {
+      MemberId = im.MemberService.ActivityLicense.Member.Id,
+      MembershipCode = im.MemberService.ActivityLicense.Member.MembershipCode,
+      FirstName = im.ConstructionLicense.MainOwner!.FirstName ?? string.Empty,
+      LastName = im.ConstructionLicense.MainOwner!.LastName ?? string.Empty,
+      Status = im.Status.Title ?? string.Empty,
+      DossierNumber = im.ConstructionLicense.DossierNumber ?? string.Empty,
+      DossierDate = ConvertToPersianDate(im.ConstructionLicense?.DossierDate, persianCalendar),
+      RefNumber = im.ConstructionLicense?.RefNumber ?? string.Empty,
+      LicenseNumber = im.ConstructionLicense?.LicenseNumber ?? string.Empty,
+      LicenseDate = ConvertToPersianDate(im.ConstructionLicense?.LicenseDate, persianCalendar),
+      RequestDate = ConvertToPersianDate(im.ConstructionLicense?.RequestDate, persianCalendar),
+      BeforeWideningArea = im.ConstructionLicense?.BeforeWideningArea,
+      AfterWideningArea = im.ConstructionLicense?.AfterWideningArea,
+      OccupancyPercentage = im.ConstructionLicense?.OccupancyPercentage,
+      LicenseRegDate = ConvertToPersianDate(im.ConstructionLicense?.RegDate, persianCalendar),
+      InvolvedMemberStatusTitle = im.Status.Title ?? string.Empty,
+      InvolvedMemberRegDate = ConvertToPersianDate(im.RegDate, persianCalendar),
+      InvolvedMemberExpireDate = ConvertToPersianDate(im.ExpireDate, persianCalendar),
+      IsCoordinator = im.IsCoordinator,
+      WorkItem = im.WorkItem,
+      Description = im.Description ?? string.Empty,
+      ModifiedWorkItem = im.ModifiedWorkItem,
+      Metraje = im.Metraje,
+      BuildingMetraje = im.ConstructionLicense?.Floors.Where(x => x.FloorRegisterStepId == 1)
                              .Sum(x => x.BuildingUnits.Sum(v => v.Area)),
-        QuotaYear = im.QuotaYear,
-        ServiceTypeTitle = im.MemberService.ServiceType.Title ?? string.Empty,
-        ServiceFieldTitle = im.MemberService.ServiceField != null ? im.MemberService.ServiceField.Title : string.Empty,
-        BuildingGroup = im.ConstructionLicense?.BuildingGroupSetting!.SubGroup.Title ?? string.Empty,
-        BuildingType = im.ConstructionLicense?.DossierType.Title ?? string.Empty,
-        LastCeiling = im.SupervisionStepForms.OrderBy(x=>x.RegDate).LastOrDefault()?.Step.FormNumber.ToString() ?? string.Empty,
-    }).ToList();
+      QuotaYear = im.QuotaYear,
+      ServiceTypeTitle = im.MemberService.ServiceType.Title ?? string.Empty,
+      ServiceFieldTitle = im.MemberService.ServiceField != null ? im.MemberService.ServiceField.Title : string.Empty,
+      BuildingGroup = im.ConstructionLicense?.BuildingGroupSetting!.SubGroup.Title ?? string.Empty,
+      BuildingType = im.ConstructionLicense?.DossierType.Title ?? string.Empty,
+      LastCeiling = im.SupervisionStepForms.OrderBy(x=>x.RegDate).LastOrDefault()?.Step.FormNumber.ToString() ?? string.Empty,
+  }).ToList();
 
-    // Set the index values
-    involvedMembers = involvedMembers.Select((item, index) =>
-    {
-        item.Index = index + 1; // Index starts from 1
-        return item;
-    }).ToList();
+  // Set the index values
+  involvedMembers = involvedMembers.Select((item, index) =>
+  {
+      item.Index = index + 1; // Index starts from 1
+      return item;
+  }).ToList();
 
-    return involvedMembers;
+  return involvedMembers;
 }
 
 private string ConvertToPersianDate(DateTime? date, PersianCalendar persianCalendar)
@@ -303,8 +351,8 @@ public class InvolvedMemberViewModel
   public float? OccupancyPercentage { get; set; }
   public string? LicenseRegDate { get; set; }
   public string InvolvedMemberStatusTitle { get; set; } = default!;
-  public string InvolvedMemberRegDate { get; set; }= default!;
-  public string InvolvedMemberExpireDate { get; set; }= default!;
+  public string InvolvedMemberRegDate { get; set;}= default!;
+  public string InvolvedMemberExpireDate { get; set;}= default!;
   public bool IsCoordinator { get; set; }
   public double? WorkItem { get; set; }
   public string Description { get; set; } = default!;

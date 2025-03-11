@@ -96,12 +96,31 @@
                     { data: 'state' },
                     { data: 'type' },
                     {
-                        data: 'filePath',
-                        render: function (data) {
+                        data: null, // ✅ Use "null" because we are combining multiple actions
+                        render: function (data, type, row) {
+                            if (!row) return ""; // ✅ Prevents undefined row errors
+
                             const baseUrl = 'https://test.wa-nezam.org/';
-                            return `<a target="_blank" href="${baseUrl}${data}" class="btn btn-primary btn-sm">
+                            const fileUrl = `${baseUrl}${row.filePath}`;
+
+                            const btnClass = row.isRead ? 'btn-success' : 'btn-secondary';
+                            const btnText = row.isRead ? 'خوانده شده' : 'خوانده نشده';
+
+                            return `
+                            <div class="d-flex">
+                                <!-- Download Button -->
+                                <a target="_blank" href="${fileUrl}" class="btn btn-primary btn-sm me-2 download-btn" 
+                                   data-id="${row.id}">
                                     <i class="fas fa-download"></i> دانلود
-                                </a>`;
+                                </a>
+
+                                <!-- Read/Unread Button -->
+                                <button class="btn ${btnClass} btn-sm toggle-read" 
+                                    data-id="${row.id}" data-status="${row.isRead}">
+                                    <i class="fas fa-eye"></i> ${btnText}
+                                </button>
+                            </div>
+                        `;
                         }
                     }
                 ],
@@ -127,10 +146,7 @@
                 language: {
                     emptyTable: "هیچ داده‌ای موجود نیست",
                     processing: "در حال پردازش...",
-                    paginate: {
-                        next: "بعدی",
-                        previous: "قبلی"
-                    },
+                    paginate: { next: "بعدی", previous: "قبلی" },
                     search: "جستجو:",
                     lengthMenu: "نمایش _MENU_ رکورد در هر صفحه",
                     info: "نمایش _START_ تا _END_ از _TOTAL_ رکورد",
@@ -138,6 +154,39 @@
                     infoFiltered: "(فیلتر شده از _MAX_ رکورد کل)"
                 }
             });
+
+            // Handle Read/Unread Button Click
+            $('#documentsTable tbody').on('click', '.toggle-read', function () {
+                let button = $(this);
+                let documentId = button.data('id');
+                let currentStatus = button.data('status');
+
+                $.ajax({
+                    url: '@Url.Page("Index")?handler=ToggleReadStatus',
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    contentType: "application/json",
+                    data: JSON.stringify({ documentId: documentId, isRead: !currentStatus }),
+                    success: function (response) {
+                        if (response.success) {
+                            // Toggle button state
+                            button.data('status', !currentStatus);
+                            button.toggleClass('btn-success btn-secondary');
+                            button.html(`<i class="fas fa-eye"></i> ${!currentStatus ? 'خوانده شده' : 'خوانده نشده'}`);
+                        } else {
+                            alert("خطا در تغییر وضعیت خوانده شده!");
+                        }
+                    },
+                    error: function () {
+                        alert("مشکلی رخ داده است. دوباره تلاش کنید.");
+                    }
+                });
+            });
+
         });
     </script>
+
+
 }

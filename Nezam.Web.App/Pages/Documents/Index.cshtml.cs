@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Nezam.System.Web.Pages.Documents;
+
 [Authorize(Policy = "SupervisorReports")]
 [Authorize(Policy = "Supervisor")]
 public class IndexModel : PageModel
@@ -62,10 +64,11 @@ public class IndexModel : PageModel
                     d.Id,
                     d.Title,
                     d.TrackingCode,
-                    CreatedAt = (d.CreatedAt.HasValue)?d.CreatedAt.Value.ToString("yyyy-MM-dd"):null,
+                    CreatedAt = (d.CreatedAt.HasValue) ? d.CreatedAt.Value.ToString("yyyy-MM-dd") : null,
                     d.State,
                     d.FilePath,
-                    d.Type
+                    d.Type,
+                    d.IsRead // ✅ Include Read Status
                 })
                 .ToList();
 
@@ -82,6 +85,28 @@ public class IndexModel : PageModel
         {
             return new JsonResult(new { error = ex.Message });
         }
+    }
+
+ 
+    public async Task<IActionResult> OnPostToggleReadStatus([FromBody] ToggleReadStatusRequest request)
+    {
+        if (request == null || request.DocumentId <= 0)
+            return BadRequest(new { success = false, message = "Invalid request" });
+
+        var document = await _dbContext.TblEesDocuments.FindAsync(request.DocumentId);
+        if (document == null)
+            return NotFound(new { success = false, message = "Document not found" });
+
+        document.IsRead = request.IsRead;
+        await _dbContext.SaveChangesAsync();
+
+        return new JsonResult(new { success = true, isRead = document.IsRead });
+    }
+
+    public class ToggleReadStatusRequest
+    {
+        public int DocumentId { get; set; }
+        public bool IsRead { get; set; }
     }
 
     public IActionResult OnGetDownload(int id)

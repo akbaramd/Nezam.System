@@ -1,0 +1,119 @@
+<div class="mt-3">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">افزودن دفتر استان</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">انتخاب دفتر استان</label>
+                        <select id="agencySelect" class="form-select">
+                            <option value="">انتخاب کنید...</option>
+                            @foreach (var agency in Model.AvailableAgencies)
+                            {
+                                <option value="@agency.Id">@agency.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="button" id="addAgencyBtn" class="btn btn-primary">افزودن</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">دفاتر استان کاربر</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>نام دفتر</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userAgenciesTable">
+                                @foreach (var agency in Model.UserAgencies)
+                                {
+                                    <tr data-agency-id="@agency.AgencyId">
+                                        <td>@agency.AgencyTitle</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-danger remove-agency-btn">حذف</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="selectedAgenciesInput" name="SelectedAgencies" value="@string.Join(",", Model.SelectedAgencies)" />
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add agency button click handler
+        document.getElementById('addAgencyBtn').addEventListener('click', function() {
+            const agencySelect = document.getElementById('agencySelect');
+            const agencyId = agencySelect.value;
+            const agencyTitle = agencySelect.options[agencySelect.selectedIndex].text;
+            
+            if (!agencyId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'خطا',
+                    text: 'لطفاً یک دفتر استان انتخاب کنید'
+                });
+                return;
+            }
+            
+            // Check if agency already exists in the table
+            const existingRow = document.querySelector(`#userAgenciesTable tr[data-agency-id="${agencyId}"]`);
+            if (existingRow) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'خطا',
+                    text: 'این دفتر استان قبلاً به کاربر اضافه شده است'
+                });
+                return;
+            }
+            
+            // Add new row to table
+            const newRow = document.createElement('tr');
+            newRow.setAttribute('data-agency-id', agencyId);
+            newRow.innerHTML = `
+                <td>${agencyTitle}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger remove-agency-btn">حذف</button>
+                </td>
+            `;
+            document.getElementById('userAgenciesTable').appendChild(newRow);
+            
+            // Update hidden input with selected agencies
+            updateSelectedAgencies();
+            
+            // Reset select
+            agencySelect.value = '';
+        });
+        
+        // Remove agency button click handler (using event delegation)
+        document.getElementById('userAgenciesTable').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-agency-btn')) {
+                const row = e.target.closest('tr');
+                row.remove();
+                updateSelectedAgencies();
+            }
+        });
+        
+        // Function to update hidden input with selected agencies
+        function updateSelectedAgencies() {
+            const rows = document.querySelectorAll('#userAgenciesTable tr');
+            const selectedAgencies = Array.from(rows).map(row => row.getAttribute('data-agency-id'));
+            document.getElementById('selectedAgenciesInput').value = selectedAgencies.join(',');
+        }
+    });
+</script>
