@@ -8,78 +8,36 @@
 @section styles{
     <!-- Sweet Alert css-->
     <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
-    <style>
-        .card {
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-        }
-        .btn-primary {
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        #reportContent {
-            transition: all 0.3s ease;
-        }
-        .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            border-color: #86b7fe;
-        }
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            border-radius: 0.5rem;
-        }
-        .report-container {
-            position: relative;
-        }
-    </style>
+    <!-- Report specific styles -->
+    <link href="~/css/reports/dossier-accounting.css" rel="stylesheet" type="text/css"/>
 }
 
 <div class="row">
     <div class="col-lg-3">
-        <div class="card">
-            <div class="card-header">
+        <div class="report-card card">
+            <div class="report-card__header card-header">
                 <h4 class="mb-0">فیلتر گزارش</h4>
             </div>
-            <div class="card-body">
+            <div class="report-card__body card-body">
                 <form id="reportForm" method="post" data-ajax="true" data-ajax-method="post" data-ajax-begin="onReportStart" data-ajax-success="onReportGenerated" data-ajax-failure="onReportFailed" data-ajax-complete="onReportComplete">
                     <div class="mb-3">
                         <label asp-for="FilterModel.DossierNumber" class="form-label">شماره پرونده</label>
-                        <input asp-for="FilterModel.DossierNumber" class="form-control" type="text" id="dossierNumberInput" placeholder="شماره پرونده را وارد کنید" required/>
+                        <input asp-for="FilterModel.DossierNumber" class="report-form__input form-control" type="text" id="dossierNumberInput" placeholder="شماره پرونده را وارد کنید" required/>
                         <span asp-validation-for="FilterModel.DossierNumber" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="report-form__button btn btn-primary w-100">
                         <i class="ri-file-search-line me-1"></i> نمایش گزارش
                     </button>
                 </form>
 
-                <div id="reportActions" class="d-flex mt-3 d-none gap-2">
+                <div id="reportActions" class="report-actions d-none">
                     <form class="flex-grow-1" id="downloadPdfForm" method="post" asp-page-handler="DownloadPdf">
                         <input type="hidden" name="dossierNumber" id="dossierNumberHiddenInput"/>
-                        <button type="submit" class="btn btn-dark w-100">
+                        <button type="submit" class="report-actions__button btn btn-dark w-100">
                             <i class="ri-file-download-line me-1"></i> دانلود PDF
                         </button>
                     </form>
-                    <button type="button" class="flex-grow-1 btn btn-light" id="printButton">
+                    <button type="button" class="report-actions__button btn btn-light" id="printButton">
                         <i class="ri-printer-line me-1"></i> چاپ
                     </button>
                 </div>
@@ -88,8 +46,8 @@
     </div>
 
     <div class="col-lg-9 report-container">
-        <div id="reportContent">
-            <div class="card">
+        <div id="reportContent" class="report-content">
+            <div class="report-card card">
                 <div class="card-body text-center p-5">
                     <i class="ri-file-list-3-line display-4 text-muted mb-3"></i>
                     <p class="fs-5">لطفاً شماره پرونده را وارد کنید و بر روی "نمایش گزارش" کلیک کنید.</p>
@@ -104,7 +62,10 @@
     <script src="/assets/js/app.js"></script>
     <!-- SweetAlert2 js -->
     <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
-    <!-- jQuery -->
+    <!-- Module type script for modern browsers -->
+    <script type="module" src="~/js/reports/dossier-accounting-report.js"></script>
+    
+    <!-- AJAX Form Handling -->
     <script>
     // Global variable to track if a SweetAlert is currently shown
     let isSwalVisible = false;
@@ -198,123 +159,5 @@
             });
         }, 300);
     }
-
-    $(document).ready(function () {
-        // Validate form before submission
-        $('#reportForm').on('submit', function(e) {
-            const dossierNumber = $('#dossierNumberInput').val().trim();
-            if (!dossierNumber) {
-                e.preventDefault();
-                
-                // Show warning with SweetAlert
-                isSwalVisible = true;
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'خطا',
-                    text: 'لطفا شماره پرونده را وارد کنید',
-                    confirmButtonText: 'متوجه شدم',
-                    allowOutsideClick: false,
-                    willClose: () => {
-                        isSwalVisible = false;
-                    }
-                });
-                return false;
-            }
-            return true;
-        });
-        
-        // Handle form submission errors at the AJAX level
-        $(document).ajaxError(function(event, jqXHR, settings, thrownError) {
-            console.error('AJAX Error:', thrownError);
-            
-            // Close any existing SweetAlert
-            if (isSwalVisible) {
-                Swal.close();
-            }
-            
-            // Show a more persistent error message
-            setTimeout(() => {
-                isSwalVisible = true;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطای سیستمی',
-                    text: 'خطایی در ارتباط با سرور رخ داده است. لطفا مجددا تلاش کنید.',
-                    confirmButtonText: 'متوجه شدم',
-                    allowOutsideClick: false,
-                    willClose: () => {
-                        isSwalVisible = false;
-                    }
-                });
-            }, 300);
-        });
-        
-        // Print functionality
-        $('#printButton').click(function () {
-            var printContents = document.getElementById('reportContent').innerHTML;
-            
-            // Create a temporary iframe for printing
-            var printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-            <html>
-            <head>
-                <title>گزارش صورت حساب پرونده</title>
-                <meta charset="utf-8">
-                <style>
-                    body {
-                        -webkit-print-color-adjust: exact;
-                        font-family: Tahoma, Arial, sans-serif;
-                        direction: rtl;
-                    }
-                    .card {
-                        border: none;
-                        box-shadow: none;
-                        page-break-inside: avoid;
-                    }
-                    #reportContent {
-                        margin: 0;
-                        padding: 0;
-                        width: 100%;
-                    }
-                    .card-body {
-                        padding: 0;
-                        margin: 0;
-                        width: 100%;
-                        box-sizing: border-box;
-                    }
-                    .card-body p {
-                        font-size: 14pt;
-                        line-height: 1.6;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    table, th, td {
-                        border: 1px solid #ddd;
-                    }
-                    th, td {
-                        padding: 8px;
-                        text-align: right;
-                    }
-                    th {
-                        background-color: #f2f2f2;
-                    }
-                </style>
-            </head>
-            <body>
-                ${printContents}
-            </body>
-            </html>
-        `);
-            printWindow.document.close();
-            
-            // Wait for resources to load before printing
-            setTimeout(function() {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            }, 500);
-        });
-    });
     </script>
 }
